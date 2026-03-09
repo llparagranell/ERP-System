@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/College-Erp-Mini-Project/static/css/main.2117edda.css",
+    "main.js": "/College-Erp-Mini-Project/static/js/main.841f5dc0.js",
+    "index.html": "/College-Erp-Mini-Project/index.html",
+    "main.2117edda.css.map": "/College-Erp-Mini-Project/static/css/main.2117edda.css.map",
+    "main.841f5dc0.js.map": "/College-Erp-Mini-Project/static/js/main.841f5dc0.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.2117edda.css",
+    "static/js/main.841f5dc0.js"
+  ]
+}
