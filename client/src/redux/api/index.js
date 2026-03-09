@@ -1,17 +1,18 @@
 import axios from "axios";
 
-// const API = axios.create({ baseURL: process.env.REACT_APP_SERVER_URL });
-const API = axios.create({ baseURL: "http://localhost:5001/" });
-
-API.interceptors.request.use((req) => {
-  if (localStorage.getItem("user")) {
-    req.headers.Authorization = `Bearer ${
-      JSON.parse(localStorage.getItem("user")).token
-    }`;
-  }
-  return req;
+const API = axios.create({
+  baseURL: "https://erp-system-vqkb.onrender.com",
 });
 
+API.interceptors.request.use((req) => {
+  const user = localStorage.getItem("user");
+
+  if (user) {
+    req.headers.Authorization = `Bearer ${JSON.parse(user).token}`;
+  }
+
+  return req;
+});
 // Admin
 
 export const adminSignIn = (formData) => API.post("/api/admin/login", formData);
