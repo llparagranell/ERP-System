@@ -38,11 +38,11 @@ const Body = () => {
   return (
     <div className="flex-[0.8] mt-3">
       <div className="space-y-5">
-        <div className="flex text-gray-400 items-center space-x-2">
+        <div className="flex text-muted items-center space-x-2">
           <MenuBookIcon />
           <h1>All Subjects</h1>
         </div>
-        <div className=" mr-10 bg-white rounded-xl pt-6 pl-6 h-[29.5rem]">
+        <div className=" mr-10 surface-card rounded-xl pt-6 pl-6 h-[29.5rem]">
           <div className="col-span-3 mr-6">
             <div className={classes.loadingAndError}>
               {loading && (

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import HomeIcon from "@mui/icons-material/Home";
 import Calendar from "react-calendar";
 import EngineeringIcon from "@mui/icons-material/Engineering";
@@ -19,7 +19,6 @@ const Body = () => {
   const user = JSON.parse(localStorage.getItem("user"));
   const subjects = useSelector((state) => state.admin.subjects.result);
   var totalAttendance = 0;
-  console.log(attendance);
 
   attendance?.map((att) => (totalAttendance += att.attended));
 
@@ -28,15 +27,15 @@ const Body = () => {
   return (
     <div className="flex-[0.8] mt-3">
       <div className="space-y-5">
-        <div className="flex text-gray-400 items-center space-x-2">
+        <div className="flex text-muted items-center space-x-2">
           <HomeIcon />
           <h1>Dashboard</h1>
         </div>
         <div className="flex flex-col mr-5 space-y-4 overflow-y-auto">
-          <div className="bg-white h-[8rem] rounded-xl shadow-lg grid grid-cols-4 justify-between px-8 items-center space-x-4">
-            <div className="flex items-center space-x-4 border-r-2">
+          <div className="surface-card h-[8rem] rounded-xl shadow-lg grid grid-cols-4 justify-between px-8 items-center space-x-4">
+            <div className="flex items-center space-x-4 border-r border-white/10">
               <EngineeringIcon
-                className="rounded-full py-2 bg-orange-300"
+                className="rounded-full p-2 bg-white/5 border border-white/10 text-indigo-200"
                 sx={{ fontSize: 40 }}
               />
               <div className="flex flex-col">
@@ -44,9 +43,9 @@ const Body = () => {
                 <h2 className="text-2xl font-bold">{subjects?.length}</h2>
               </div>
             </div>
-            <div className="flex items-center space-x-4 border-r-2">
+            <div className="flex items-center space-x-4 border-r border-white/10">
               <BoyIcon
-                className="rounded-full py-2 bg-orange-300"
+                className="rounded-full p-2 bg-white/5 border border-white/10 text-violet-200"
                 sx={{ fontSize: 40 }}
               />
               <div className="flex flex-col">
@@ -54,9 +53,9 @@ const Body = () => {
                 <h2 className="text-2xl font-bold">{testResult?.length}</h2>
               </div>
             </div>
-            <div className="flex items-center space-x-4 border-r-2">
+            <div className="flex items-center space-x-4 border-r border-white/10">
               <SupervisorAccountIcon
-                className="rounded-full py-2 bg-orange-300"
+                className="rounded-full p-2 bg-white/5 border border-white/10 text-sky-200"
                 sx={{ fontSize: 40 }}
               />
               <div className="flex flex-col">
@@ -66,7 +65,7 @@ const Body = () => {
             </div>
             <div className="flex items-center space-x-4 ">
               <MenuBookIcon
-                className="rounded-full py-2 bg-orange-300"
+                className="rounded-full p-2 bg-white/5 border border-white/10 text-indigo-200"
                 sx={{ fontSize: 40 }}
               />
               <div className="flex flex-col">
@@ -77,16 +76,16 @@ const Body = () => {
           </div>
           <div className="flex space-x-4">
             <div className="flex flex-col space-y-4 w-2/6">
-              <div className="bg-white h-[17rem] rounded-xl shadow-lg">
+              <div className="surface-card h-[17rem] rounded-xl shadow-lg">
                 <Calendar onChange={onChange} value={value} />
               </div>
             </div>
-            <div className="bg-white h-[17rem] w-full rounded-xl shadow-lg flex flex-col  pt-3">
+            <div className="surface-card h-[17rem] w-full rounded-xl shadow-lg flex flex-col  pt-3">
               <div className="flex px-3">
                 {open && (
                   <ReplyIcon
                     onClick={() => setOpen(false)}
-                    className="cursor-pointer"
+                    className="cursor-pointer text-white/70 hover:text-white"
                   />
                 )}
                 <h1 className="font-bold text-xl w-full text-center">

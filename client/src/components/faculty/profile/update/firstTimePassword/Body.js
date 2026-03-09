@@ -51,7 +51,7 @@ const Body = () => {
   return (
     <div className="flex flex-col items-center w-full space-y-10 mt-24">
       <form onSubmit={update} className="flex flex-col space-y-6 items-center">
-        <h1 className="text-black text-3xl font-bold">Update Password</h1>
+        <h1 className="text-white text-3xl font-bold">Update Password</h1>
         <div className="space-y-1">
           <p className="text-[#515966] font-bold text-sm">New Password</p>
           <div className="bg-[#515966] rounded-lg px-3 flex items-center space-x-3 w-full">

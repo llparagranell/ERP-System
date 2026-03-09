@@ -9,30 +9,30 @@ const Header = () => {
   const navigate = useNavigate();
   const logout = () => {
     dispatch({ type: "LOGOUT" });
-    navigate("/login/adminLogin");
+    navigate("/login/adminlogin");
   };
   return (
-    <div className="flex-[0.05] flex justify-between items-center mx-5 my-2">
-      <div className="flex items-center ">
-        <img
-          src="https://icon-library.com/images/cms-icon/cms-icon-11.jpg"
-          alt=""
-          className="h-7"
-        />
-        <h1 className="font-bold text-blue-600 text-sm">CMS</h1>
+    <div className="flex-[0.05] flex justify-between items-center px-6 py-4 border-b border-white/10">
+      <div className="flex items-center gap-2">
+        <div className="w-9 h-9 rounded-lg btn-brand flex items-center justify-center text-lg shadow-lg shadow-indigo-500/20">
+          🎓
+        </div>
+        <h1 className="font-extrabold text-sm tracking-wide">
+          Edu<span className="brand-text">ERP</span>
+        </h1>
       </div>
-      <h1 className="font-semibold text-black">Welcome</h1>
-      <div className="flex items-center space-x-3">
+      <h1 className="font-semibold text-muted">Welcome</h1>
+      <div className="flex items-center gap-3 text-sm">
         <Avatar
           src={user.result.avatar}
           alt={user.result.name.charAt(0)}
           sx={{ width: 24, height: 24 }}
-          className="border-blue-600 border-2"
+          className="border-white/15 border-2"
         />
-        <h1>{user.result.name.split(" ")[0]}</h1>
+        <h1 className="text-white/90">{user.result.name.split(" ")[0]}</h1>
         <LogoutIcon
           onClick={logout}
-          className="cursor-pointer hover:scale-125 transition-all "
+          className="cursor-pointer hover:scale-110 transition-all text-white/70 hover:text-white"
         />
       </div>
     </div>

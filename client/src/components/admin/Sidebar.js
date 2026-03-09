@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import HomeIcon from "@mui/icons-material/Home";
 import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
@@ -9,11 +9,10 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
 import { useDispatch } from "react-redux";
 import decode from "jwt-decode";
-import { setRef } from "@mui/material";
 const isNotActiveStyle =
-  "flex items-center px-5 gap-3 text-gray-500 hover:text-black transition-all duration-200 ease-in-out capitalize hover:bg-gray-200 py-2 my-1";
+  "nav-item";
 const isActiveStyle =
-  "flex items-center px-5 gap-3 text-blue-600 transition-all duration-200 ease-in-out capitalize hover:bg-gray-200 py-2 my-1";
+  "nav-item nav-item-active";
 
 const Sidebar = () => {
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
@@ -22,7 +21,7 @@ const Sidebar = () => {
   const logout = () => {
     alert("OOPS! Your session expired. Please Login again");
     dispatch({ type: "LOGOUT" });
-    navigate("/login/adminLogin");
+    navigate("/login/adminlogin");
   };
   useEffect(() => {
     const token = user?.token;
@@ -44,7 +43,7 @@ const Sidebar = () => {
   // }, []);
   return (
     <div className="flex-[0.2]">
-      <div className="space-y-8 overflow-y-scroll scrollbar-thin scrollbar-track-white scrollbar-thumb-gray-300 h-[33rem]">
+      <div className="space-y-8 overflow-y-scroll scrollbar-thin scrollbar-track-transparent scrollbar-thumb-white/10 h-[33rem]">
         <div className="">
           <NavLink
             to="/admin/home"

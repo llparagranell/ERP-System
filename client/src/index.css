@@ -1,3 +1,160 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  :root {
+    --bg: #050510;
+    --surface: rgba(255, 255, 255, 0.04);
+    --surface-2: rgba(255, 255, 255, 0.03);
+    --border: rgba(255, 255, 255, 0.08);
+    --border-2: rgba(255, 255, 255, 0.07);
+    --text: rgba(255, 255, 255, 0.9);
+    --muted: rgba(255, 255, 255, 0.6);
+    --subtle: rgba(255, 255, 255, 0.4);
+    --brand-1: #6366f1;
+    --brand-2: #a855f7;
+    --brand-3: #3b82f6;
+  }
+
+  html,
+  body {
+    height: 100%;
+  }
+
+  body {
+    color: var(--text);
+    background: var(--bg);
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI,
+      Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  }
+}
+
+@layer components {
+  .app-bg {
+    background:
+      radial-gradient(
+        1200px 600px at 15% 20%,
+        rgba(99, 102, 241, 0.3),
+        transparent 55%
+      ),
+      radial-gradient(
+        900px 500px at 85% 15%,
+        rgba(168, 85, 247, 0.26),
+        transparent 55%
+      ),
+      radial-gradient(
+        900px 700px at 50% 100%,
+        rgba(59, 130, 246, 0.18),
+        transparent 60%
+      ),
+      var(--bg);
+  }
+
+  .surface-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    box-shadow: 0 30px 80px -35px rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(18px);
+  }
+
+  .surface-card {
+    background: var(--surface-2);
+    border: 1px solid var(--border-2);
+    backdrop-filter: blur(14px);
+  }
+
+  .brand-text {
+    background: linear-gradient(135deg, var(--brand-1), var(--brand-2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .text-muted {
+    color: var(--muted);
+  }
+
+  .text-subtle {
+    color: var(--subtle);
+  }
+
+  .nav-item {
+    @apply flex items-center gap-3 px-5 py-2 my-1 rounded-lg text-sm font-medium transition-all duration-200 ease-in-out capitalize;
+    color: var(--muted);
+  }
+
+  .nav-item:hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: rgba(255, 255, 255, 0.92);
+  }
+
+  .nav-item-active {
+    background: rgba(99, 102, 241, 0.14);
+    color: #a5b4fc;
+  }
+
+  .nav-item-active:hover {
+    background: rgba(99, 102, 241, 0.18);
+    color: #c7d2fe;
+  }
+
+  .btn-brand {
+    background: linear-gradient(135deg, var(--brand-1), var(--brand-2));
+  }
+}
+
+@layer utilities {
+  /* Dark theme overrides for react-calendar */
+  .react-calendar {
+    background: transparent;
+    border: none;
+    width: 100%;
+  }
+  .react-calendar,
+  .react-calendar button {
+    color: var(--text);
+  }
+  .react-calendar__navigation button:enabled:hover,
+  .react-calendar__navigation button:enabled:focus {
+    background: rgba(255, 255, 255, 0.06);
+  }
+  .react-calendar__tile:enabled:hover,
+  .react-calendar__tile:enabled:focus {
+    background: rgba(99, 102, 241, 0.16);
+  }
+  .react-calendar__tile--now {
+    background: rgba(168, 85, 247, 0.16);
+  }
+  .react-calendar__tile--active {
+    background: rgba(99, 102, 241, 0.28);
+  }
+
+  /* Minimal dark theme overrides for Material UI menus/selects */
+  .MuiPaper-root {
+    background-color: rgba(8, 12, 24, 0.98) !important;
+    color: rgba(255, 255, 255, 0.9) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    backdrop-filter: blur(14px);
+  }
+
+  .MuiMenuItem-root {
+    color: rgba(255, 255, 255, 0.86) !important;
+  }
+
+  .MuiMenuItem-root.Mui-selected,
+  .MuiMenuItem-root.Mui-selected:hover {
+    background: rgba(99, 102, 241, 0.18) !important;
+  }
+
+  .MuiMenuItem-root:hover {
+    background: rgba(255, 255, 255, 0.06) !important;
+  }
+
+  .MuiOutlinedInput-notchedOutline {
+    border-color: rgba(255, 255, 255, 0.14) !important;
+  }
+
+  .MuiInputBase-root:hover .MuiOutlinedInput-notchedOutline {
+    border-color: rgba(99, 102, 241, 0.4) !important;
+  }
+}

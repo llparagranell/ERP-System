@@ -1,5 +1,6 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
+import LandingPage from "./components/landing/LandingPage";
 import AddAdmin from "./components/admin/addAdmin/AddAdmin";
 import AddDepartment from "./components/admin/addDepartment/AddDepartment";
 import AddFaculty from "./components/admin/addFaculty/AddFaculty";
@@ -46,7 +47,8 @@ import CreateNotice from "./components/admin/createNotice/CreateNotice";
 const App = () => {
   return (
     <Routes>
-      <Route exact path="/" element={<Login />} />
+      <Route exact path="/" element={<LandingPage />} />
+      <Route path="/login" element={<Login />} />
 
       {/* Admin  */}
 
