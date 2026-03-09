@@ -1,10 +1,10 @@
 {
   "files": {
-    "main.css": "/College-Erp-Mini-Project/static/css/main.2117edda.css",
-    "main.js": "/College-Erp-Mini-Project/static/js/main.841f5dc0.js",
-    "index.html": "/College-Erp-Mini-Project/index.html",
-    "main.2117edda.css.map": "/College-Erp-Mini-Project/static/css/main.2117edda.css.map",
-    "main.841f5dc0.js.map": "/College-Erp-Mini-Project/static/js/main.841f5dc0.js.map"
+    "main.css": "/ERP-System/static/css/main.2117edda.css",
+    "main.js": "/ERP-System/static/js/main.841f5dc0.js",
+    "index.html": "/ERP-System/index.html",
+    "main.2117edda.css.map": "/ERP-System/static/css/main.2117edda.css.map",
+    "main.841f5dc0.js.map": "/ERP-System/static/js/main.841f5dc0.js.map"
   },
   "entrypoints": [
     "static/css/main.2117edda.css",
