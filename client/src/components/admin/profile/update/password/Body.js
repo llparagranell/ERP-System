@@ -49,7 +49,7 @@ const Body = () => {
   }, [store.errors]);
 
   return (
-    <div className="flex-[0.8] mt-3">
+    <div className="flex-1 min-w-0 mt-3">
       <div className="space-y-5">
         <div className="flex text-muted items-center space-x-2">
           <VisibilityOffIcon />

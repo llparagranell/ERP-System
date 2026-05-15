@@ -38,7 +38,7 @@ const Body = () => {
     if (Object.keys(store.errors).length !== 0) {
       setError(store.errors);
       errorRef.current.scrollIntoView({ behavior: "smooth" });
-      setValue({ ...value, email: "" });
+      setValue((prevValue) => ({ ...prevValue, email: "" }));
     }
   }, [store.errors]);
 
@@ -76,14 +76,14 @@ const Body = () => {
     } else {
       setLoading(true);
     }
-  }, [store.errors, store.admin.studentAdded]);
+  }, [dispatch, store.errors, store.admin.studentAdded]);
 
   useEffect(() => {
     dispatch({ type: SET_ERRORS, payload: {} });
-  }, []);
+  }, [dispatch]);
 
   return (
-    <div className="flex-[0.8] mt-3">
+    <div className="flex-1 min-w-0 mt-3">
       <div className="space-y-5">
         <div className="flex text-muted items-center space-x-2">
           <AddIcon />

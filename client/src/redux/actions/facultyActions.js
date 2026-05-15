@@ -25,7 +25,7 @@ export const facultySignIn = (formData, navigate) => async (dispatch) => {
 export const facultyUpdatePassword =
   (formData, navigate) => async (dispatch) => {
     try {
-      const { data } = await api.facultyUpdatePassword(formData);
+      await api.facultyUpdatePassword(formData);
       dispatch({ type: UPDATE_PASSWORD, payload: true });
       alert("Password Updated");
       navigate("/faculty/home");
@@ -36,7 +36,7 @@ export const facultyUpdatePassword =
 
 export const updateFaculty = (formData) => async (dispatch) => {
   try {
-    const { data } = await api.updateFaculty(formData);
+    await api.updateFaculty(formData);
     dispatch({ type: UPDATE_FACULTY, payload: true });
   } catch (error) {
     dispatch({ type: SET_ERRORS, payload: error.response.data });
@@ -45,7 +45,7 @@ export const updateFaculty = (formData) => async (dispatch) => {
 
 export const createTest = (formData) => async (dispatch) => {
   try {
-    const { data } = await api.createTest(formData);
+    await api.createTest(formData);
     alert("Test Created Successfully");
 
     dispatch({ type: ADD_TEST, payload: true });
@@ -82,7 +82,7 @@ export const uploadMark =
         year,
         test,
       };
-      const { data } = await api.uploadMarks(formData);
+      await api.uploadMarks(formData);
       alert("Marks Uploaded Successfully");
       dispatch({ type: MARKS_UPLOADED, payload: true });
     } catch (error) {
@@ -101,7 +101,7 @@ export const markAttendance =
         year,
         section,
       };
-      const { data } = await api.markAttendance(formData);
+      await api.markAttendance(formData);
       alert("Attendance Marked Successfully");
       dispatch({ type: ATTENDANCE_MARKED, payload: true });
     } catch (error) {

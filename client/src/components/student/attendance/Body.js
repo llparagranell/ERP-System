@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
 import { useDispatch, useSelector } from "react-redux";
-import { getSubject } from "../../../redux/actions/adminActions";
-import { MenuItem, Select } from "@mui/material";
 import Spinner from "../../../utils/Spinner";
 import { SET_ERRORS } from "../../../redux/actionTypes";
 import * as classes from "../../../utils/styles";
@@ -15,8 +13,6 @@ const Body = () => {
   const [loading, setLoading] = useState(false);
   const store = useSelector((state) => state);
 
-  const [search, setSearch] = useState(false);
-
   useEffect(() => {
     if (Object.keys(store.errors).length !== 0) {
       setError(store.errors);
@@ -24,25 +20,19 @@ const Body = () => {
     }
   }, [store.errors]);
 
-  const subjects = useSelector((state) => state.admin.subjects.result);
-
-  useEffect(() => {
-    if (subjects?.length !== 0) setLoading(false);
-  }, [subjects]);
-
   useEffect(() => {
     dispatch({ type: SET_ERRORS, payload: {} });
-  }, []);
+  }, [dispatch]);
 
   return (
-    <div className="flex-[0.8] mt-3">
+    <div className="flex-1 min-w-0 mt-3">
       <div className="space-y-5">
         <div className="flex text-muted items-center space-x-2">
           <MenuBookIcon />
           <h1>All Subjects</h1>
         </div>
-        <div className=" mr-10 surface-card rounded-xl pt-6 pl-6 h-[29.5rem]">
-          <div className="col-span-3 mr-6">
+        <div className="mr-0 md:mr-10 surface-card rounded-xl p-4 sm:p-6 h-auto md:h-[29.5rem]">
+          <div className="min-w-0">
             <div className={classes.loadingAndError}>
               {loading && (
                 <Spinner
@@ -61,7 +51,7 @@ const Body = () => {
             </div>
             {!loading &&
               Object.keys(error).length === 0 &&
-              subjects?.length !== 0 && (
+              attendance?.length !== 0 && (
                 <div className={classes.adminData}>
                   <div className="grid grid-cols-8">
                     <h1 className={`${classes.adminDataHeading} col-span-1`}>

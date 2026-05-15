@@ -1,5 +1,5 @@
 export const adminData =
-  "surface-card flex flex-col overflow-y-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-white/10 h-[25rem] shadow-lg pl-5 rounded-md overflow-x-hidden";
+  "surface-card flex flex-col overflow-y-auto overflow-x-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-white/10 h-[60vh] md:h-[25rem] shadow-lg pl-4 pr-2 sm:pl-5 rounded-md";
 
 export const adminDataBody =
   "grid grid-cols-12 hover:scale-105 transition-all duration-150";
@@ -14,10 +14,11 @@ export const adminFormClearButton =
 export const adminFormButton = "self-center space-x-6";
 
 export const adminForm0 = "flex flex-col mb-6";
-export const adminForm1 = "flex py-10 ml-10 space-x-28";
+export const adminForm1 =
+  "flex flex-col md:flex-row py-6 md:py-10 md:ml-10 gap-8 md:gap-0 md:space-x-28";
 export const adminForm2l = "flex flex-col space-y-10";
 export const adminForm2r = "flex flex-col space-y-10 pr-6";
-export const adminForm3 = "grid grid-cols-2  gap-10";
+export const adminForm3 = "grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10";
 
 export const adminLabel =
   "text-sm font-semibold text-muted";

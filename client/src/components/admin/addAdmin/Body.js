@@ -27,7 +27,7 @@ const Body = () => {
   useEffect(() => {
     if (Object.keys(store.errors).length !== 0) {
       setError(store.errors);
-      setValue({ ...value, email: "" });
+      setValue((prevValue) => ({ ...prevValue, email: "" }));
     }
   }, [store.errors]);
 
@@ -59,14 +59,14 @@ const Body = () => {
     } else {
       setLoading(true);
     }
-  }, [store.errors, store.admin.adminAdded]);
+  }, [dispatch, store.errors, store.admin.adminAdded]);
 
   useEffect(() => {
     dispatch({ type: SET_ERRORS, payload: {} });
-  }, []);
+  }, [dispatch]);
 
   return (
-    <div className="flex-[0.8] mt-3">
+    <div className="flex-1 min-w-0 mt-3">
       <div className="space-y-5">
         <div className="flex text-muted items-center space-x-2">
           <EngineeringIcon />

@@ -59,14 +59,14 @@ const Body = () => {
     } else {
       setLoading(true);
     }
-  }, [store.errors, store.admin.subjectAdded]);
+  }, [dispatch, store.errors, store.admin.subjectAdded]);
 
   useEffect(() => {
     dispatch({ type: SET_ERRORS, payload: {} });
-  }, []);
+  }, [dispatch]);
 
   return (
-    <div className="flex-[0.8] mt-3">
+    <div className="flex-1 min-w-0 mt-3">
       <div className="space-y-5">
         <div className="flex text-muted items-center space-x-2">
           <AddIcon />

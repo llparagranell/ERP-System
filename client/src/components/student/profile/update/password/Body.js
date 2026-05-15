@@ -4,9 +4,7 @@ import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import Spinner from "../../../../../utils/Spinner";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { adminUpdatePassword } from "../../../../../redux/actions/adminActions";
 import * as classes from "../../../../../utils/styles";
-import { facultyUpdatePassword } from "../../../../../redux/actions/facultyActions";
 import { studentUpdatePassword } from "../../../../../redux/actions/studentActions";
 const Body = () => {
   const [newPassword, setNewPassword] = useState("");
@@ -51,7 +49,7 @@ const Body = () => {
   }, [store.errors]);
 
   return (
-    <div className="flex-[0.8] mt-3">
+    <div className="flex-1 min-w-0 mt-3">
       <div className="space-y-5">
         <div className="flex text-muted items-center space-x-2">
           <VisibilityOffIcon />

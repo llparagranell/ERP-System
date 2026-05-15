@@ -1,821 +1,647 @@
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
-/* ─────────────────────────────────────────
-   Scroll-reveal hook
-───────────────────────────────────────── */
-function useReveal(threshold = 0.15) {
-    const ref = useRef(null);
-    const [visible, setVisible] = useState(false);
-    useEffect(() => {
-        const obs = new IntersectionObserver(
-            ([entry]) => { if (entry.isIntersecting) { setVisible(true); obs.disconnect(); } },
-            { threshold }
-        );
-        if (ref.current) obs.observe(ref.current);
-        return () => obs.disconnect();
-    }, [threshold]);
-    return [ref, visible];
-}
-
-/* ─────────────────────────────────────────
-   Animated section wrapper
-───────────────────────────────────────── */
-function Reveal({ children, delay = 0, className = "" }) {
-    const [ref, visible] = useReveal();
-    return (
-        <div
-            ref={ref}
-            className={className}
-            style={{
-                opacity: visible ? 1 : 0,
-                transform: visible ? "translateY(0)" : "translateY(40px)",
-                transition: `opacity 0.7s ease ${delay}ms, transform 0.7s ease ${delay}ms`,
-            }}
-        >
-            {children}
-        </div>
+/* ── Scroll-reveal hook ── */
+function useReveal(threshold = 0.12) {
+  const ref = useRef(null);
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const obs = new IntersectionObserver(
+      ([e]) => { if (e.isIntersecting) { setVisible(true); obs.disconnect(); } },
+      { threshold }
     );
+    if (ref.current) obs.observe(ref.current);
+    return () => obs.disconnect();
+  }, [threshold]);
+  return [ref, visible];
 }
 
-/* ─────────────────────────────────────────
-   Main Component
-───────────────────────────────────────── */
-const LandingPage = () => {
-    const navigate = useNavigate();
-    const [scrolled, setScrolled] = useState(false);
-    const [openFaq, setOpenFaq] = useState(null);
-    const [mobileOpen, setMobileOpen] = useState(false);
+function Reveal({ children, delay = 0, className = "", style = {} }) {
+  const [ref, visible] = useReveal();
+  return (
+    <div
+      ref={ref}
+      className={className}
+      style={{
+        opacity: visible ? 1 : 0,
+        transform: visible ? "translateY(0)" : "translateY(28px)",
+        transition: `opacity 0.65s ease ${delay}ms, transform 0.65s ease ${delay}ms`,
+        ...style,
+      }}
+    >
+      {children}
+    </div>
+  );
+}
 
-    useEffect(() => {
-        const onScroll = () => setScrolled(window.scrollY > 60);
-        window.addEventListener("scroll", onScroll);
-        return () => window.removeEventListener("scroll", onScroll);
-    }, []);
+/* ── Fake navigate for preview ── */
 
-    /* ── Data ── */
-    const stats = [
-        { value: "500+", label: "Students" },
-        { value: "50+", label: "Faculty" },
-        { value: "20+", label: "Departments" },
-        { value: "99.9%", label: "Uptime" },
-    ];
 
-    const portals = [
-        {
-            icon: "🎒", title: "Student Portal",
-            desc: "Access subjects, attendance records, test results, and your academic in one place.",
-            perks: ["View Attendance", "Check Results", "Subject List", "Edit Profile"],
-            route: "/login/studentlogin",
-            accent: "#6366f1",
-            ring: "from-indigo-500 to-violet-500",
-        },
-        {
-            icon: "🧑‍🏫", title: "Faculty Portal",
-            desc: "Mark attendance, upload marks, create tests, and manage classes with ease.",
-            perks: ["Mark Attendance", "Upload Marks", "Create Tests", "Faculty Profile"],
-            route: "/login/facultylogin",
-            accent: "#a855f7",
-            ring: "from-purple-500 to-fuchsia-500",
-        },
-        {
-            icon: "🛡️", title: "Admin Portal",
-            desc: "Full institutional control — departments, faculty, students, subjects, notices.",
-            perks: ["Manage Departments", "Add Faculty / Students", "Subject Control", "Publish Notices"],
-            route: "/login/adminlogin",
-            accent: "#3b82f6",
-            ring: "from-blue-500 to-cyan-500",
-        },
-    ];
+export default function LandingPage() {
+  const navigate = useNavigate();
+  const [scrolled, setScrolled] = useState(false);
+  const [openFaq, setOpenFaq] = useState(null);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
-    const features = [
-        { icon: "🎓", title: "Student Management", desc: "Full lifecycle from enrollment to graduation." },
-        { icon: "📋", title: "Attendance Tracking", desc: "Automated system with instant visual reports." },
-        { icon: "📊", title: "Results & Marks", desc: "Exam grading and performance analytics." },
-        { icon: "🏫", title: "Department Control", desc: "Centralised & department management." },
-        { icon: "📢", title: "Notice Board", desc: "Instant institution-wide announcements." },
-        { icon: "🔒", title: "Secure Access", desc: "Role-based JWT auth for every user." },
-    ];
+  useEffect(() => {
+    const fn = () => setScrolled(window.scrollY > 50);
+    window.addEventListener("scroll", fn);
+    return () => window.removeEventListener("scroll", fn);
+  }, []);
 
-    const whyUs = [
-        { icon: "⚡", title: "Real-Time Sync", desc: "Live data across every portal — no refresh needed.", grad: "from-indigo-500/20 to-transparent", border: "border-indigo-500/25" },
-        { icon: "🛡️", title: "Enterprise Security", desc: "JWT auth + bcrypt hashing on every credential.", grad: "from-purple-500/20 to-transparent", border: "border-purple-500/25" },
-        { icon: "📱", title: "Fully Responsive", desc: "Pixel-perfect on desktop, tablet, or mobile.", grad: "from-blue-500/20 to-transparent", border: "border-blue-500/25" },
-        { icon: "📈", title: "Smart Analytics", desc: "Dashboards for attendance trends & results.", grad: "from-violet-500/20 to-transparent", border: "border-violet-500/25" },
-        { icon: "🚀", title: "Lightning Fast", desc: "React + Node.js + MongoDB for sub-second loads.", grad: "from-fuchsia-500/20 to-transparent", border: "border-fuchsia-500/25" },
-        { icon: "🔧", title: "Easy Admin", desc: "Manage your whole campus in a few clicks.", grad: "from-sky-500/20 to-transparent", border: "border-sky-500/25" },
-    ];
+  const portals = [
+    {
+      label: "Students",
+      icon: "📖",
+      title: "Student Portal",
+      desc: "Track attendance, check results, view subjects, and manage your academic profile — all in one clean dashboard.",
+      perks: ["Live Attendance View", "Exam Results", "Subject Listings", "Profile Management"],
+      route: "/login/studentlogin",
+      tag: "Most used",
+      tagColor: "#1a1a2e",
+    },
+    {
+      label: "Faculty",
+      icon: "🖊",
+      title: "Faculty Portal",
+      desc: "Mark attendance, upload marks, run test workflows, and manage your classes with zero friction.",
+      perks: ["Mark Attendance", "Upload Marks", "Create Tests", "Class Overview"],
+      route: "/login/facultylogin",
+      tag: null,
+    },
+    {
+      label: "Admin",
+      icon: "⚙",
+      title: "Admin Portal",
+      desc: "Full institutional control — departments, faculty, student data, subjects, and broadcast notices.",
+      perks: ["Manage Departments", "Add People", "Subject Control", "Publish Notices"],
+      route: "/login/adminlogin",
+      tag: null,
+    },
+  ];
 
-    const faqs = [
-        { q: "Who can use EduERP?", a: "Three roles: Admins (full control), Faculty (class tools), and Students (academic access). Each has a dedicated login and customised dashboard." },
-        { q: "How do I get my login credentials?", a: "Your institution admin issues credentials. Admins add faculty and students through the Admin Portal and the system creates secure accounts automatically." },
-        { q: "Can faculty upload marks and attendance?", a: "Yes! Faculty can mark attendance, create tests, and upload marks. Students see results updated in real time." },
-        { q: "Is student data secure?", a: "Absolutely — JWT authentication, bcrypt hashing, and strict role-based API guards mean each user only ever sees their own data." },
-        { q: "Can students view their attendance history?", a: "Yes. A clean dashboard shows subject-wise attendance, test scores, and full academic profile history." },
-        { q: "Does EduERP support multiple departments?", a: "Yes. Admins can create unlimited departments, assign subjects, and allocate faculty — all from the Admin Panel." },
-    ];
+  const features = [
+    { icon: "🎓", title: "Student Management", desc: "Full lifecycle from enrollment through graduation, organized and accessible." },
+    { icon: "📋", title: "Attendance Tracking", desc: "Automated records with per-subject visual breakdowns for every student." },
+    { icon: "📊", title: "Results & Analytics", desc: "Grade uploads, performance trends, and exportable academic reports." },
+    { icon: "🏫", title: "Department Control", desc: "Centralized department, subject, and allocation management for admins." },
+    { icon: "📢", title: "Notice Board", desc: "Broadcast institution-wide or role-specific announcements instantly." },
+    { icon: "🔒", title: "Role-Based Access", desc: "JWT authentication and strict access guards keep data exactly where it belongs." },
+  ];
 
-    return (
-        <>
-            {/* ── Global keyframe styles ── */}
-            <style>{`
-                @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+  const faqs = [
+    { q: "Who is EduERP built for?", a: "Three distinct roles: Admins with full institutional control, Faculty with classroom tools, and Students with academic access. Each role has a dedicated login and tailored dashboard." },
+    { q: "How do users get their login credentials?", a: "Your institution admin creates accounts through the Admin Portal. The system generates secure credentials automatically — no manual setup needed." },
+    { q: "Can faculty upload marks and attendance?", a: "Yes. Faculty can mark attendance, create tests, and upload marks. Students see updates reflected in their dashboards in real time." },
+    { q: "How is student data protected?", a: "JWT authentication, bcrypt-hashed credentials, and strict role-based API guards ensure each user only ever accesses their own data." },
+    { q: "Can students view their attendance history?", a: "Absolutely. A clean per-subject attendance dashboard shows percentage, history, and test scores alongside a full academic profile." },
+    { q: "Does EduERP support multiple departments?", a: "Yes. Admins can create unlimited departments, assign subjects, and allocate faculty — all from the Admin Panel with no code required." },
+  ];
 
-                *, *::before, *::after { box-sizing: border-box; }
-                html { scroll-behavior: smooth; }
-                body { font-family: 'Inter', sans-serif !important; }
+  return (
+    <>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap');
 
-                @keyframes orb-drift {
-                    0%,100% { transform: translate(0, 0) scale(1); }
-                    33%      { transform: translate(40px,-30px) scale(1.08); }
-                    66%      { transform: translate(-30px,20px) scale(0.95); }
-                }
-                @keyframes spin-slow {
-                    from { transform: rotate(0deg); }
-                    to   { transform: rotate(360deg); }
-                }
-                @keyframes shimmer {
-                    0%   { background-position: -200% center; }
-                    100% { background-position:  200% center; }
-                }
-                @keyframes badge-glow {
-                    0%,100% { box-shadow: 0 0 0 0 rgba(99,102,241,0); }
-                    50%     { box-shadow: 0 0 20px 4px rgba(99,102,241,0.35); }
-                }
-                @keyframes float-y {
-                    0%,100% { transform: translateY(0); }
-                    50%     { transform: translateY(-10px); }
-                }
-                @keyframes counter-up {
-                    from { opacity:0; transform:translateY(12px); }
-                    to   { opacity:1; transform:translateY(0); }
-                }
-                @keyframes gradient-shift {
-                    0%   { background-position: 0% 50%; }
-                    50%  { background-position: 100% 50%; }
-                    100% { background-position: 0% 50%; }
-                }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
 
-                .orb { animation: orb-drift 14s ease-in-out infinite; }
-                .orb-2 { animation: orb-drift 18s ease-in-out infinite reverse; }
-                .orb-3 { animation: orb-drift 22s ease-in-out infinite 4s; }
+        :root {
+          --cream: #faf8f4;
+          --cream2: #f2ede4;
+          --ink: #1a1714;
+          --ink2: #3d3832;
+          --muted: #7a7268;
+          --accent: #2b4fff;
+          --accent2: #0f2acc;
+          --border: #e3ddd5;
+          --border2: #cec8be;
+          --serif: 'DM Serif Display', Georgia, serif;
+          --sans: 'DM Sans', system-ui, sans-serif;
+          --r: 12px;
+          --r2: 20px;
+        }
 
-                .shimmer-text {
-                    background: linear-gradient(90deg,
-                        #6366f1 0%, #a855f7 25%, #c084fc 50%, #a855f7 75%, #6366f1 100%);
-                    background-size: 200% auto;
-                    -webkit-background-clip: text;
-                    -webkit-text-fill-color: transparent;
-                    animation: shimmer 4s linear infinite;
-                }
-                .spin-ring { animation: spin-slow 8s linear infinite; }
-                .float-icon { animation: float-y 3s ease-in-out infinite; }
+        body { font-family: var(--sans); background: var(--cream); color: var(--ink); -webkit-font-smoothing: antialiased; }
 
-                .card-hover {
-                    transition: transform 0.35s cubic-bezier(.22,.68,0,1.2),
-                                box-shadow 0.35s ease, border-color 0.35s ease;
-                }
-                .card-hover:hover {
-                    transform: translateY(-10px) scale(1.01);
-                    box-shadow: 0 30px 60px -10px rgba(99,102,241,0.3);
-                    border-color: rgba(99,102,241,0.4) !important;
-                }
+        /* Noise texture overlay */
+        body::before {
+          content: '';
+          position: fixed;
+          inset: 0;
+          background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+          opacity: 0.4;
+          pointer-events: none;
+          z-index: 0;
+        }
 
-                .why-card {
-                    transition: transform 0.3s ease, box-shadow 0.3s ease;
-                }
-                .why-card:hover {
-                    transform: translateY(-6px) scale(1.02);
-                    box-shadow: 0 20px 40px -10px rgba(99,102,241,0.25);
-                }
+        @keyframes fadeUp {
+          from { opacity: 0; transform: translateY(20px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes marquee {
+          from { transform: translateX(0); }
+          to   { transform: translateX(-50%); }
+        }
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-8px); }
+        }
 
-                .nav-link {
-                    position: relative;
-                    color: rgba(255,255,255,0.6);
-                    text-decoration: none;
-                    font-size: 0.875rem;
-                    font-weight: 500;
-                    transition: color 0.2s;
-                }
-                .nav-link::after {
-                    content: '';
-                    position: absolute;
-                    bottom: -3px; left: 0;
-                    width: 0; height: 2px;
-                    background: linear-gradient(90deg,#6366f1,#a855f7);
-                    border-radius: 2px;
-                    transition: width 0.3s ease;
-                }
-                .nav-link:hover { color: #fff; }
-                .nav-link:hover::after { width: 100%; }
+        .nav-link {
+          font-size: 0.875rem; font-weight: 500; color: var(--ink2);
+          text-decoration: none; letter-spacing: 0.01em;
+          transition: color 0.2s;
+        }
+        .nav-link:hover { color: var(--accent); }
 
-                .faq-item {
-                    transition: border-color 0.3s ease, background 0.3s ease;
-                }
-                .gradient-border {
-                    background: linear-gradient(135deg,#6366f1,#a855f7,#3b82f6);
-                    background-size: 200% 200%;
-                    animation: gradient-shift 5s ease infinite;
-                }
-                .section-label {
-                    font-size: 0.72rem;
-                    font-weight: 700;
-                    letter-spacing: 0.15em;
-                    text-transform: uppercase;
-                }
+        .btn-primary {
+          background: var(--ink); color: #fff; border: none;
+          padding: 0.7rem 1.6rem; border-radius: 50px;
+          font-family: var(--sans); font-size: 0.875rem; font-weight: 600;
+          letter-spacing: 0.01em; cursor: pointer;
+          transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+          box-shadow: 0 2px 12px rgba(26,23,20,0.18);
+        }
+        .btn-primary:hover { background: var(--accent); transform: translateY(-2px); box-shadow: 0 6px 24px rgba(43,79,255,0.3); }
 
-                /* ── Hamburger ── */
-                .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; background: none; border: none; }
-                .hamburger span { display: block; width: 22px; height: 2px; background: rgba(255,255,255,0.8); border-radius: 2px; transition: all 0.3s ease; }
-                .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-                .hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
-                .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+        .btn-ghost {
+          background: transparent; color: var(--ink2);
+          border: 1.5px solid var(--border2);
+          padding: 0.7rem 1.6rem; border-radius: 50px;
+          font-family: var(--sans); font-size: 0.875rem; font-weight: 500;
+          cursor: pointer; transition: all 0.2s;
+        }
+        .btn-ghost:hover { border-color: var(--ink); color: var(--ink); background: rgba(26,23,20,0.04); }
 
-                .nav-desktop { display: flex; gap: 2rem; align-items: center; }
-                .nav-cta-desktop { display: block; }
+        .portal-card {
+          background: #fff; border: 1px solid var(--border);
+          border-radius: var(--r2); padding: 2rem;
+          transition: transform 0.3s cubic-bezier(.22,.68,0,1.2), box-shadow 0.3s ease, border-color 0.3s;
+          cursor: default;
+        }
+        .portal-card:hover {
+          transform: translateY(-8px);
+          box-shadow: 0 20px 50px rgba(26,23,20,0.1);
+          border-color: var(--border2);
+        }
 
-                .mobile-menu {
-                    display: none;
-                    flex-direction: column;
-                    gap: 0;
-                    background: rgba(8,12,24,0.97);
-                    backdrop-filter: blur(20px);
-                    border-top: 1px solid rgba(255,255,255,0.06);
-                    overflow: hidden;
-                    transition: max-height 0.4s cubic-bezier(0.4,0,0.2,1);
-                }
+        .feature-card {
+          padding: 1.75rem; border-radius: var(--r);
+          border: 1px solid var(--border);
+          background: #fff;
+          transition: all 0.25s ease;
+        }
+        .feature-card:hover {
+          border-color: var(--accent);
+          box-shadow: 0 8px 30px rgba(43,79,255,0.1);
+          transform: translateY(-4px);
+        }
 
-                /* ── Responsive breakpoints ── */
-                @media (max-width: 768px) {
-                    .hamburger { display: flex; }
-                    .nav-desktop { display: none !important; }
-                    .nav-cta-desktop { display: none !important; }
-                    .mobile-menu { display: flex; }
+        .faq-item {
+          border-bottom: 1px solid var(--border);
+          transition: background 0.2s;
+        }
+        .faq-btn {
+          width: 100%; background: none; border: none;
+          display: flex; justify-content: space-between; align-items: center;
+          padding: 1.25rem 0; cursor: pointer;
+          color: var(--ink); font-family: var(--sans);
+          font-size: 0.975rem; font-weight: 500; text-align: left;
+        }
+        .faq-chevron {
+          width: 28px; height: 28px; border-radius: 50%;
+          border: 1.5px solid var(--border2);
+          display: flex; align-items: center; justify-content: center;
+          flex-shrink: 0;
+          font-size: 1rem; color: var(--muted);
+          transition: transform 0.3s ease, border-color 0.3s, background 0.3s;
+        }
 
-                    .hero-title { font-size: 2.2rem !important; letter-spacing: -1px !important; }
-                    .hero-section { padding-top: 8rem !important; padding-bottom: 4rem !important; }
-                    .hero-sub { font-size: 1rem !important; }
-                    .hero-ctas { flex-direction: column !important; align-items: center !important; }
-                    .hero-ctas button { width: 100%; max-width: 280px; }
-                    .stats-row { gap: 2rem !important; }
+        .marquee-track { display: flex; width: max-content; animation: marquee 28s linear infinite; }
+        .marquee-track:hover { animation-play-state: paused; }
 
-                    .section-inner { padding: 3rem 1.25rem !important; }
-                    .section-title { font-size: 1.75rem !important; }
+        .stat-box { text-align: center; }
+        .stat-num { font-family: var(--serif); font-size: 3rem; color: var(--ink); line-height: 1; }
+        .stat-label { font-size: 0.78rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 0.4rem; font-weight: 500; }
 
-                    .portal-grid { grid-template-columns: 1fr !important; }
-                    .features-grid { grid-template-columns: 1fr 1fr !important; }
-                    .why-grid { grid-template-columns: 1fr 1fr !important; }
+        /* Hamburger */
+        .hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 4px; }
+        .hamburger span { display: block; width: 22px; height: 1.5px; background: var(--ink2); border-radius: 2px; transition: all 0.3s; }
+        .hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+        .hamburger.open span:nth-child(2) { opacity: 0; }
+        .hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
 
-                    .highlight-strip { grid-template-columns: 1fr !important; }
-                    .highlight-strip > div { border-right: none !important; border-bottom: 1px solid rgba(255,255,255,0.07); }
-                    .highlight-strip > div:last-child { border-bottom: none; }
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+          .hamburger { display: flex !important; }
+          .nav-links { display: none !important; }
+          .nav-cta { display: none !important; }
+          .mobile-menu { display: flex !important; }
+          .hero-title { font-size: clamp(2.4rem, 8vw, 3.2rem) !important; }
+          .hero-grid { grid-template-columns: 1fr !important; }
+          .portal-grid { grid-template-columns: 1fr !important; }
+          .features-grid { grid-template-columns: 1fr 1fr !important; }
+          .stats-row { grid-template-columns: 1fr 1fr !important; display: grid !important; gap: 2rem !important; }
+          .cta-inner { flex-direction: column !important; align-items: flex-start !important; }
+          .footer-row { flex-direction: column !important; gap: 2.5rem !important; }
+          .section-pad { padding: 4rem 1.5rem !important; }
+        }
+        @media (max-width: 480px) {
+          .features-grid { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
 
-                    .footer-inner { flex-direction: column !important; gap: 2rem !important; }
-                    .footer-links { gap: 2rem !important; }
+      <div style={{ position: "relative", zIndex: 1 }}>
 
-                    .cta-banner { margin: 0 1rem 4rem !important; padding: 3rem 1.5rem !important; }
-                    .cta-banner-btns { flex-direction: column !important; align-items: center !important; }
-                    .cta-banner-btns button { width: 100%; max-width: 280px; }
-                }
-
-                @media (max-width: 480px) {
-                    .features-grid { grid-template-columns: 1fr !important; }
-                    .why-grid { grid-template-columns: 1fr !important; }
-                    .stats-row { grid-template-columns: 1fr 1fr !important; display: grid !important; gap: 1.5rem !important; }
-                }
-            `}</style>
-
-            <div style={{ minHeight: "100vh", background: "#080c18", color: "#fff", fontFamily: "'Inter',sans-serif", overflowX: "hidden", position: "relative" }}>
-
-                {/* ── Animated background orbs ── */}
-                <div className="orb" style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0 }}>
-                    <div style={{ position: "absolute", top: "-15%", left: "-10%", width: 700, height: 700, borderRadius: "50%", background: "radial-gradient(circle, rgba(99,102,241,0.13) 0%, transparent 65%)" }} />
-                </div>
-                <div className="orb-2" style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0 }}>
-                    <div style={{ position: "absolute", top: "35%", right: "-8%", width: 550, height: 550, borderRadius: "50%", background: "radial-gradient(circle, rgba(168,85,247,0.1) 0%, transparent 65%)" }} />
-                </div>
-                <div className="orb-3" style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0 }}>
-                    <div style={{ position: "absolute", bottom: "-10%", left: "25%", width: 500, height: 500, borderRadius: "50%", background: "radial-gradient(circle, rgba(59,130,246,0.08) 0%, transparent 65%)" }} />
-                </div>
-
-                {/* ── NAVBAR ── */}
-                <nav style={{
-                    position: "fixed", top: 0, left: 0, right: 0, zIndex: 9999,
-                    transition: "all 0.4s ease",
-                    padding: scrolled ? "0.75rem 0" : "1.4rem 0",
-                    background: scrolled ? "rgba(8,12,24,0.85)" : "transparent",
-                    backdropFilter: scrolled ? "blur(20px)" : "none",
-                    borderBottom: scrolled ? "1px solid rgba(255,255,255,0.06)" : "none",
-                    boxShadow: scrolled ? "0 8px 40px rgba(0,0,0,0.4)" : "none",
-                }}>
-                    <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 2rem", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                        {/* Logo */}
-                        <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
-                            <div style={{ width: 36, height: 36, borderRadius: 10, background: "linear-gradient(135deg,#6366f1,#a855f7)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.1rem" }}>🎓</div>
-                            <span style={{ fontSize: "1.2rem", fontWeight: 800, letterSpacing: "-0.5px" }}>
-                                Edu<span style={{ background: "linear-gradient(135deg,#6366f1,#a855f7)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>ERP</span>
-                            </span>
-                        </div>
-                        {/* Desktop links */}
-                        <div className="nav-desktop">
-                            {[["#login", "Login"], ["#features", "Features"], ["#why-us", "Why Us"], ["#faq", "FAQ"]].map(([href, label]) => (
-                                <a key={href} href={href} className="nav-link">{label}</a>
-                            ))}
-                        </div>
-                        {/* Desktop CTA */}
-                        <button
-                            className="nav-cta-desktop"
-                            onClick={() => navigate("/login/adminlogin")}
-                            style={{
-                                padding: "0.55rem 1.4rem", borderRadius: 50, border: "none", cursor: "pointer", fontWeight: 700, fontSize: "0.875rem",
-                                background: "linear-gradient(135deg,#6366f1,#a855f7)",
-                                color: "#fff", boxShadow: "0 4px 20px rgba(99,102,241,0.4)",
-                                transition: "transform 0.2s, box-shadow 0.2s",
-                            }}
-                            onMouseEnter={e => { e.currentTarget.style.transform = "scale(1.06)"; e.currentTarget.style.boxShadow = "0 8px 30px rgba(99,102,241,0.6)"; }}
-                            onMouseLeave={e => { e.currentTarget.style.transform = "scale(1)"; e.currentTarget.style.boxShadow = "0 4px 20px rgba(99,102,241,0.4)"; }}
-                        >
-                            Get Started →
-                        </button>
-                        {/* Hamburger */}
-                        <button className={`hamburger ${mobileOpen ? "open" : ""}`} onClick={() => setMobileOpen(o => !o)} aria-label="Menu">
-                            <span /><span /><span />
-                        </button>
-                    </div>
-                    {/* Mobile drawer */}
-                    <div className="mobile-menu" style={{ maxHeight: mobileOpen ? 320 : 0 }}>
-                        {[["#login", "Login"], ["#features", "Features"], ["#why-us", "Why Us"], ["#faq", "FAQ"]].map(([href, label]) => (
-                            <a
-                                key={href} href={href}
-                                onClick={() => setMobileOpen(false)}
-                                style={{ padding: "1rem 2rem", color: "rgba(255,255,255,0.75)", textDecoration: "none", fontSize: "1rem", fontWeight: 600, borderBottom: "1px solid rgba(255,255,255,0.05)", transition: "background 0.2s" }}
-                                onMouseEnter={e => e.currentTarget.style.background = "rgba(99,102,241,0.1)"}
-                                onMouseLeave={e => e.currentTarget.style.background = "transparent"}
-                            >
-                                {label}
-                            </a>
-                        ))}
-                        <div style={{ padding: "1rem 2rem 1.5rem" }}>
-                            <button
-                                onClick={() => { navigate("/login/adminlogin"); setMobileOpen(false); }}
-                                style={{ width: "100%", padding: "0.75rem", borderRadius: 50, border: "none", cursor: "pointer", fontWeight: 700, background: "linear-gradient(135deg,#6366f1,#a855f7)", color: "#fff" }}
-                            >
-                                Get Started →
-                            </button>
-                        </div>
-                    </div>
-                </nav>
-
-                {/* ══════════════════════════════════════
-                    HERO
-                ══════════════════════════════════════ */}
-                <section className="hero-section" style={{ position: "relative", zIndex: 1, textAlign: "center", paddingTop: "10rem", paddingBottom: "7rem", paddingLeft: "2rem", paddingRight: "2rem" }}>
-                    {/* Badge */}
-                    <div style={{
-                        display: "inline-flex", alignItems: "center", gap: "0.5rem",
-                        padding: "0.3rem 1.1rem", borderRadius: 50, marginBottom: "2rem",
-                        background: "rgba(99,102,241,0.12)", border: "1px solid rgba(99,102,241,0.35)",
-                        fontSize: "0.82rem", color: "rgba(255,255,255,0.85)", fontWeight: 600,
-                        animation: "badge-glow 3s ease infinite",
-                    }}>
-                        <span style={{ width: 7, height: 7, borderRadius: "50%", background: "#6366f1", boxShadow: "0 0 8px #6366f1", display: "inline-block" }} />
-                        Next-Generation College ERP Platform
-                    </div>
-
-                    {/* Headline */}
-                    <h1 className="hero-title" style={{ fontSize: "clamp(2.8rem, 6vw, 5.2rem)", fontWeight: 900, lineHeight: 1.08, letterSpacing: "-2px", marginBottom: "1.6rem", maxWidth: 800, margin: "0 auto 1.6rem" }}>
-                        Manage Your Institution
-                        <br />
-                        <span className="shimmer-text">Smarter & Faster</span>
-                    </h1>
-
-                    {/* Sub */}
-                    <p className="hero-sub" style={{ fontSize: "1.15rem", color: "rgba(255,255,255,0.55)", maxWidth: 560, margin: "0 auto 3rem", lineHeight: 1.75 }}>
-                        One unified platform for admins, faculty, and students — streamline attendance, results, and academics effortlessly.
-                    </p>
-
-                    {/* CTAs */}
-                    <div className="hero-ctas" style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
-                        <button
-                            onClick={() => navigate("/login/studentlogin")}
-                            style={{
-                                padding: "0.85rem 2rem", borderRadius: 50, border: "none", cursor: "pointer",
-                                background: "linear-gradient(135deg,#6366f1,#a855f7)", color: "#fff", fontWeight: 700, fontSize: "0.95rem",
-                                boxShadow: "0 8px 30px rgba(99,102,241,0.45)", transition: "all 0.3s",
-                            }}
-                            onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-3px)"; e.currentTarget.style.boxShadow = "0 16px 40px rgba(99,102,241,0.6)"; }}
-                            onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 8px 30px rgba(99,102,241,0.45)"; }}
-                        >
-                            Student Portal →
-                        </button>
-                        <button
-                            onClick={() => navigate("/login/facultylogin")}
-                            style={{
-                                padding: "0.85rem 2rem", borderRadius: 50, cursor: "pointer",
-                                background: "transparent", color: "#fff", fontWeight: 700, fontSize: "0.95rem",
-                                border: "1px solid rgba(255,255,255,0.2)", backdropFilter: "blur(10px)",
-                                transition: "all 0.3s",
-                            }}
-                            onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-3px)"; e.currentTarget.style.background = "rgba(255,255,255,0.08)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.4)"; }}
-                            onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.2)"; }}
-                        >
-                            Faculty Portal →
-                        </button>
-                    </div>
-
-                    {/* Stats row */}
-                    <div className="stats-row" style={{ display: "flex", justifyContent: "center", gap: "4rem", marginTop: "5rem", flexWrap: "wrap" }}>
-                        {stats.map((s, i) => (
-                            <div key={i} style={{ textAlign: "center", animation: `counter-up 0.6s ease ${i * 120}ms both` }}>
-                                <div style={{
-                                    fontSize: "2.4rem", fontWeight: 900, letterSpacing: "-1px",
-                                    background: "linear-gradient(135deg,#6366f1,#a855f7)",
-                                    WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
-                                }}>
-                                    {s.value}
-                                </div>
-                                <div style={{ fontSize: "0.8rem", color: "rgba(255,255,255,0.45)", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", marginTop: 4 }}>
-                                    {s.label}
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-
-                    {/* Decorative divider */}
-                    <div style={{ marginTop: "5rem", height: 1, background: "linear-gradient(90deg, transparent, rgba(99,102,241,0.4), rgba(168,85,247,0.4), transparent)", maxWidth: 800, margin: "5rem auto 0" }} />
-                </section>
-
-                {/* ══════════════════════════════════════
-                    PORTAL LOGIN CARDS
-                ══════════════════════════════════════ */}
-                <section id="login" style={{ position: "relative", zIndex: 1, maxWidth: 1200, margin: "0 auto", padding: "5rem 2rem" }}>
-                    <Reveal>
-                        <div style={{ textAlign: "center", marginBottom: "3.5rem" }}>
-                            <span className="section-label" style={{ color: "#818cf8" }}>Access Portals</span>
-                            <h2 style={{ fontSize: "clamp(1.8rem,4vw,2.8rem)", fontWeight: 800, letterSpacing: "-1px", marginTop: "0.75rem" }}>
-                                Choose Your Portal
-                            </h2>
-                            <p style={{ color: "rgba(255,255,255,0.5)", marginTop: "0.75rem", fontSize: "1rem" }}>
-                                Dedicated dashboards crafted for every role in your institution.
-                            </p>
-                        </div>
-                    </Reveal>
-
-                    <div className="portal-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "1.5rem" }}>
-                        {portals.map((p, i) => (
-                            <Reveal key={i} delay={i * 120}>
-                                <div
-                                    className="card-hover"
-                                    style={{
-                                        background: "rgba(255,255,255,0.03)",
-                                        border: "1px solid rgba(255,255,255,0.07)",
-                                        borderRadius: 24, padding: "2.2rem",
-                                        position: "relative", overflow: "hidden",
-                                    }}
-                                >
-                                    {/* Top gradient bleed */}
-                                    <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: `linear-gradient(90deg,${p.accent},${p.accent}88)`, borderRadius: "24px 24px 0 0" }} />
-
-                                    {/* Spinning ring icon */}
-                                    <div className="float-icon" style={{ marginBottom: "1.5rem", position: "relative", width: 72, height: 72 }}>
-                                        <div className={`spin-ring gradient-border`} style={{ position: "absolute", inset: -2, borderRadius: "50%", opacity: 0.7 }} />
-                                        <div style={{
-                                            position: "relative", zIndex: 1, width: 72, height: 72, borderRadius: "50%",
-                                            background: `${p.accent}22`, border: `1px solid ${p.accent}44`,
-                                            display: "flex", alignItems: "center", justifyContent: "center", fontSize: "2rem",
-                                        }}>
-                                            {p.icon}
-                                        </div>
-                                    </div>
-
-                                    <h3 style={{ fontSize: "1.35rem", fontWeight: 800, marginBottom: "0.6rem", letterSpacing: "-0.3px" }}>{p.title}</h3>
-                                    <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "0.9rem", lineHeight: 1.7, marginBottom: "1.5rem" }}>{p.desc}</p>
-
-                                    <ul style={{ marginBottom: "2rem", display: "flex", flexDirection: "column", gap: "0.45rem" }}>
-                                        {p.perks.map((perk, j) => (
-                                            <li key={j} style={{ display: "flex", alignItems: "center", gap: "0.6rem", fontSize: "0.875rem", color: "rgba(255,255,255,0.65)" }}>
-                                                <span style={{ width: 18, height: 18, borderRadius: "50%", background: `${p.accent}33`, border: `1px solid ${p.accent}55`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.65rem", flexShrink: 0 }}>✓</span>
-                                                {perk}
-                                            </li>
-                                        ))}
-                                    </ul>
-
-                                    <button
-                                        onClick={() => navigate(p.route)}
-                                        style={{
-                                            width: "100%", padding: "0.8rem", borderRadius: 14, border: "none", cursor: "pointer",
-                                            background: `linear-gradient(135deg,${p.accent},${p.accent}bb)`,
-                                            color: "#fff", fontWeight: 700, fontSize: "0.95rem",
-                                            boxShadow: `0 4px 20px ${p.accent}44`,
-                                            transition: "all 0.3s",
-                                        }}
-                                        onMouseEnter={e => { e.currentTarget.style.opacity = "0.85"; e.currentTarget.style.transform = "scale(1.02)"; }}
-                                        onMouseLeave={e => { e.currentTarget.style.opacity = "1"; e.currentTarget.style.transform = "scale(1)"; }}
-                                    >
-                                        Login →
-                                    </button>
-                                </div>
-                            </Reveal>
-                        ))}
-                    </div>
-                </section>
-
-                {/* Divider */}
-                <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 2rem" }}>
-                    <div style={{ height: 1, background: "linear-gradient(90deg, transparent, rgba(99,102,241,0.25), transparent)" }} />
-                </div>
-
-                {/* ══════════════════════════════════════
-                    FEATURES
-                ══════════════════════════════════════ */}
-                <section id="features" style={{ position: "relative", zIndex: 1, maxWidth: 1200, margin: "0 auto", padding: "5rem 2rem" }}>
-                    <Reveal>
-                        <div style={{ textAlign: "center", marginBottom: "3.5rem" }}>
-                            <span className="section-label" style={{ color: "#818cf8" }}>Features</span>
-                            <h2 style={{ fontSize: "clamp(1.8rem,4vw,2.8rem)", fontWeight: 800, letterSpacing: "-1px", marginTop: "0.75rem" }}>
-                                Powerful Features
-                            </h2>
-                            <p style={{ color: "rgba(255,255,255,0.5)", marginTop: "0.75rem" }}>
-                                Everything you need to run your institution seamlessly.
-                            </p>
-                        </div>
-                    </Reveal>
-
-                    <div className="features-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1.25rem" }}>
-                        {features.map((f, i) => (
-                            <Reveal key={i} delay={i * 80}>
-                                <div
-                                    style={{
-                                        background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.07)",
-                                        borderRadius: 18, padding: "1.75rem",
-                                        transition: "all 0.3s cubic-bezier(.22,.68,0,1.2)",
-                                        cursor: "default",
-                                    }}
-                                    onMouseEnter={e => {
-                                        e.currentTarget.style.transform = "translateY(-6px)";
-                                        e.currentTarget.style.background = "rgba(99,102,241,0.08)";
-                                        e.currentTarget.style.borderColor = "rgba(99,102,241,0.35)";
-                                        e.currentTarget.style.boxShadow = "0 16px 40px rgba(99,102,241,0.18)";
-                                    }}
-                                    onMouseLeave={e => {
-                                        e.currentTarget.style.transform = "translateY(0)";
-                                        e.currentTarget.style.background = "rgba(255,255,255,0.025)";
-                                        e.currentTarget.style.borderColor = "rgba(255,255,255,0.07)";
-                                        e.currentTarget.style.boxShadow = "none";
-                                    }}
-                                >
-                                    <div style={{ fontSize: "2rem", marginBottom: "1rem" }}>{f.icon}</div>
-                                    <h3 style={{ fontWeight: 700, fontSize: "1.05rem", marginBottom: "0.5rem" }}>{f.title}</h3>
-                                    <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "0.875rem", lineHeight: 1.7 }}>{f.desc}</p>
-                                </div>
-                            </Reveal>
-                        ))}
-                    </div>
-                </section>
-
-                {/* Divider */}
-                <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 2rem" }}>
-                    <div style={{ height: 1, background: "linear-gradient(90deg, transparent, rgba(168,85,247,0.25), transparent)" }} />
-                </div>
-
-                {/* ══════════════════════════════════════
-                    WHY CHOOSE US
-                ══════════════════════════════════════ */}
-                <section id="why-us" style={{ position: "relative", zIndex: 1, maxWidth: 1200, margin: "0 auto", padding: "5rem 2rem" }}>
-                    <Reveal>
-                        <div style={{ textAlign: "center", marginBottom: "3.5rem" }}>
-                            <span className="section-label" style={{ color: "#c084fc" }}>Why Us</span>
-                            <h2 style={{ fontSize: "clamp(1.8rem,4vw,2.8rem)", fontWeight: 800, letterSpacing: "-1px", marginTop: "0.75rem" }}>
-                                Why Choose EduERP?
-                            </h2>
-                            <p style={{ color: "rgba(255,255,255,0.5)", marginTop: "0.75rem", maxWidth: 480, margin: "0.75rem auto 0" }}>
-                                Built for modern institutions that demand reliability, speed, and zero friction.
-                            </p>
-                        </div>
-                    </Reveal>
-
-                    <div className="why-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1.25rem" }}>
-                        {whyUs.map((item, i) => (
-                            <Reveal key={i} delay={i * 80}>
-                                <div
-                                    className="why-card"
-                                    style={{
-                                        background: `linear-gradient(135deg, ${item.grad.replace("from-", "").replace(" to-transparent", "")} 0%, transparent 80%)`,
-                                        border: `1px solid ${item.border.replace("border-", "").replace("/25", "")}33`,
-                                        borderRadius: 18, padding: "1.75rem", cursor: "default",
-                                    }}
-                                >
-                                    <div style={{ fontSize: "2rem", marginBottom: "1rem" }}>{item.icon}</div>
-                                    <h3 style={{ fontWeight: 700, fontSize: "1.05rem", marginBottom: "0.5rem" }}>{item.title}</h3>
-                                    <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "0.875rem", lineHeight: 1.7 }}>{item.desc}</p>
-                                </div>
-                            </Reveal>
-                        ))}
-                    </div>
-
-                    {/* Highlight strip */}
-                    <Reveal delay={200}>
-                        <div className="highlight-strip" style={{
-                            marginTop: "2.5rem", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-                            background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)",
-                            borderRadius: 16, overflow: "hidden",
-                        }}>
-                            {["No software to install", "Instant role-based access", "Works 24 / 7 on any device"].map((label, i) => (
-                                <div key={i} style={{
-                                    display: "flex", alignItems: "center", gap: "0.75rem",
-                                    padding: "1.25rem 2rem",
-                                    borderRight: i < 2 ? "1px solid rgba(255,255,255,0.07)" : "none",
-                                }}>
-                                    <span style={{ fontSize: "1.2rem" }}>✅</span>
-                                    <span style={{ color: "rgba(255,255,255,0.75)", fontWeight: 600, fontSize: "0.875rem" }}>{label}</span>
-                                </div>
-                            ))}
-                        </div>
-                    </Reveal>
-                </section>
-
-                {/* Divider */}
-                <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 2rem" }}>
-                    <div style={{ height: 1, background: "linear-gradient(90deg, transparent, rgba(59,130,246,0.25), transparent)" }} />
-                </div>
-
-                {/* ══════════════════════════════════════
-                    FAQ
-                ══════════════════════════════════════ */}
-                <section id="faq" style={{ position: "relative", zIndex: 1, maxWidth: 780, margin: "0 auto", padding: "5rem 2rem" }}>
-                    <Reveal>
-                        <div style={{ textAlign: "center", marginBottom: "3.5rem" }}>
-                            <span className="section-label" style={{ color: "#c084fc" }}>FAQ</span>
-                            <h2 style={{ fontSize: "clamp(1.8rem,4vw,2.8rem)", fontWeight: 800, letterSpacing: "-1px", marginTop: "0.75rem" }}>
-                                Frequently Asked Questions
-                            </h2>
-                            <p style={{ color: "rgba(255,255,255,0.5)", marginTop: "0.75rem" }}>
-                                Everything you need to know before you get started.
-                            </p>
-                        </div>
-                    </Reveal>
-
-                    <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-                        {faqs.map((faq, i) => (
-                            <Reveal key={i} delay={i * 60}>
-                                <div
-                                    className="faq-item"
-                                    style={{
-                                        border: openFaq === i ? "1px solid rgba(99,102,241,0.45)" : "1px solid rgba(255,255,255,0.08)",
-                                        background: openFaq === i ? "rgba(99,102,241,0.08)" : "rgba(255,255,255,0.03)",
-                                        borderRadius: 14, overflow: "hidden",
-                                    }}
-                                >
-                                    <button
-                                        onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                                        style={{
-                                            width: "100%", textAlign: "left", display: "flex",
-                                            justifyContent: "space-between", alignItems: "center",
-                                            padding: "1.25rem 1.5rem", background: "transparent", border: "none",
-                                            cursor: "pointer", color: "#fff", fontWeight: 600, fontSize: "0.95rem",
-                                        }}
-                                    >
-                                        <span>{faq.q}</span>
-                                        <span style={{
-                                            display: "inline-flex", alignItems: "center", justifyContent: "center",
-                                            width: 28, height: 28, borderRadius: "50%", flexShrink: 0,
-                                            background: openFaq === i ? "rgba(99,102,241,0.3)" : "rgba(255,255,255,0.07)",
-                                            color: openFaq === i ? "#a5b4fc" : "rgba(255,255,255,0.5)",
-                                            fontSize: "1.2rem", fontWeight: 300, lineHeight: 1,
-                                            transform: openFaq === i ? "rotate(45deg)" : "rotate(0deg)",
-                                            transition: "transform 0.3s ease, background 0.3s ease",
-                                        }}>+</span>
-                                    </button>
-                                    <div style={{
-                                        maxHeight: openFaq === i ? 200 : 0,
-                                        overflow: "hidden",
-                                        transition: "max-height 0.4s cubic-bezier(0.4,0,0.2,1)",
-                                    }}>
-                                        <p style={{
-                                            padding: "0 1.5rem 1.25rem",
-                                            color: "rgba(255,255,255,0.55)",
-                                            fontSize: "0.9rem", lineHeight: 1.75,
-                                            borderTop: "1px solid rgba(255,255,255,0.07)",
-                                            paddingTop: "1rem",
-                                        }}>
-                                            {faq.a}
-                                        </p>
-                                    </div>
-                                </div>
-                            </Reveal>
-                        ))}
-                    </div>
-                </section>
-
-                {/* ══════════════════════════════════════
-                    CTA BANNER
-                ══════════════════════════════════════ */}
-                <Reveal>
-                    <section className="cta-banner" style={{ position: "relative", zIndex: 1, maxWidth: 1000, margin: "0 auto 6rem", padding: "0 2rem" }}>
-                        <div style={{
-                            position: "relative", borderRadius: 28, overflow: "hidden", textAlign: "center",
-                            padding: "5rem 3rem",
-                            background: "linear-gradient(135deg, rgba(99,102,241,0.18) 0%, rgba(168,85,247,0.12) 50%, rgba(59,130,246,0.1) 100%)",
-                            border: "1px solid rgba(99,102,241,0.25)",
-                        }}>
-                            {/* shimmer overlay */}
-                            <div style={{
-                                position: "absolute", inset: 0, pointerEvents: "none",
-                                background: "radial-gradient(ellipse at 50% 0%, rgba(99,102,241,0.2), transparent 70%)",
-                            }} />
-                            <span className="section-label" style={{ color: "#818cf8", position: "relative", zIndex: 1 }}>Get Started</span>
-                            <h2 style={{ fontSize: "clamp(1.8rem,4vw,2.8rem)", fontWeight: 800, letterSpacing: "-1px", margin: "1rem 0 0.75rem", position: "relative", zIndex: 1 }}>
-                                Ready to Transform Your Institution?
-                            </h2>
-                            <p style={{ color: "rgba(255,255,255,0.55)", marginBottom: "2.5rem", position: "relative", zIndex: 1, fontSize: "1rem" }}>
-                                Join institutions already using EduERP to simplify campus management.
-                            </p>
-                            <div className="cta-banner-btns" style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap", position: "relative", zIndex: 1 }}>
-                                <button
-                                    onClick={() => navigate("/login/studentlogin")}
-                                    style={{
-                                        padding: "0.85rem 2rem", borderRadius: 50, border: "none", cursor: "pointer",
-                                        background: "linear-gradient(135deg,#6366f1,#a855f7)", color: "#fff", fontWeight: 700, fontSize: "0.95rem",
-                                        boxShadow: "0 8px 30px rgba(99,102,241,0.45)", transition: "all 0.3s",
-                                    }}
-                                    onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-3px)"; e.currentTarget.style.boxShadow = "0 16px 40px rgba(99,102,241,0.6)"; }}
-                                    onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 8px 30px rgba(99,102,241,0.45)"; }}
-                                >
-                                    Student Login →
-                                </button>
-                                <button
-                                    onClick={() => navigate("/login/facultylogin")}
-                                    style={{
-                                        padding: "0.85rem 2rem", borderRadius: 50, cursor: "pointer",
-                                        background: "rgba(255,255,255,0.07)", color: "#fff", fontWeight: 700, fontSize: "0.95rem",
-                                        border: "1px solid rgba(255,255,255,0.2)", backdropFilter: "blur(10px)", transition: "all 0.3s",
-                                    }}
-                                    onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-3px)"; e.currentTarget.style.background = "rgba(255,255,255,0.14)"; }}
-                                    onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.background = "rgba(255,255,255,0.07)"; }}
-                                >
-                                    Faculty Login →
-                                </button>
-                            </div>
-                        </div>
-                    </section>
-                </Reveal>
-
-                {/* ══════════════════════════════════════
-                    FOOTER
-                ══════════════════════════════════════ */}
-                <footer style={{ position: "relative", zIndex: 1, borderTop: "1px solid rgba(255,255,255,0.06)", background: "rgba(0,0,0,0.25)" }}>
-                    <div className="footer-inner" style={{ maxWidth: 1200, margin: "0 auto", padding: "3.5rem 2rem 2rem", display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "2.5rem" }}>
-                        {/* Brand */}
-                        <div style={{ maxWidth: 280 }}>
-                            <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", marginBottom: "1rem" }}>
-                                <div style={{ width: 32, height: 32, borderRadius: 9, background: "linear-gradient(135deg,#6366f1,#a855f7)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1rem" }}>🎓</div>
-                                <span style={{ fontWeight: 800, fontSize: "1.1rem" }}>
-                                    Edu<span style={{ background: "linear-gradient(135deg,#6366f1,#a855f7)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>ERP</span>
-                                </span>
-                            </div>
-                            <p style={{ color: "rgba(255,255,255,0.4)", fontSize: "0.875rem", lineHeight: 1.7 }}>
-                                Empowering educational institutions with modern, intelligent ERP solutions.
-                            </p>
-                        </div>
-
-                        {/* Links */}
-                        <div className="footer-links" style={{ display: "flex", gap: "4rem", flexWrap: "wrap" }}>
-                            {[
-                                { heading: "Portals", links: [["Student Login", "/login/studentlogin"], ["Faculty Login", "/login/facultylogin"], ["Admin Login", "/login/adminlogin"]] },
-                                { heading: "Features", links: [["Attendance", "#features"], ["Results", "#features"], ["Notices", "#features"]] },
-                                { heading: "Navigate", links: [["Why Us", "#why-us"], ["FAQ", "#faq"], ["Get Started", "/login/adminlogin"]] },
-                            ].map(({ heading, links }) => (
-                                <div key={heading}>
-                                    <h4 style={{ color: "rgba(255,255,255,0.7)", fontSize: "0.78rem", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: "1rem" }}>{heading}</h4>
-                                    {links.map(([label, href]) => (
-                                        <div key={label} style={{ marginBottom: "0.6rem" }}>
-                                            <a
-                                                href={href}
-                                                style={{ color: "rgba(255,255,255,0.4)", textDecoration: "none", fontSize: "0.875rem", transition: "color 0.2s" }}
-                                                onMouseEnter={e => e.currentTarget.style.color = "#a5b4fc"}
-                                                onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,0.4)"}
-                                                onClick={href.startsWith("/") ? (e) => { e.preventDefault(); navigate(href); } : undefined}
-                                            >
-                                                {label}
-                                            </a>
-                                        </div>
-                                    ))}
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Bottom bar */}
-                    <div style={{ borderTop: "1px solid rgba(255,255,255,0.05)", padding: "1.25rem 2rem", textAlign: "center" }}>
-                        <p style={{ color: "rgba(255,255,255,0.25)", fontSize: "0.8rem" }}>
-                            © 2026 EduERP · All rights reserved · Built with ❤️ for education
-                        </p>
-                    </div>
-                </footer>
-
+        {/* ══ NAVBAR ══ */}
+        <nav style={{
+          position: "fixed", top: 0, left: 0, right: 0, zIndex: 9999,
+          padding: scrolled ? "0.85rem 0" : "1.25rem 0",
+          background: scrolled ? "rgba(250,248,244,0.92)" : "transparent",
+          backdropFilter: scrolled ? "blur(16px)" : "none",
+          borderBottom: scrolled ? "1px solid var(--border)" : "none",
+          transition: "all 0.35s ease",
+        }}>
+          <div style={{ maxWidth: 1160, margin: "0 auto", padding: "0 2rem", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            {/* Logo */}
+            <a href="/" style={{ display: "flex", alignItems: "center", gap: "0.5rem", textDecoration: "none" }}>
+              <div style={{ width: 34, height: 34, borderRadius: 9, background: "var(--ink)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1rem" }}>🎓</div>
+              <span style={{ fontFamily: "var(--serif)", fontSize: "1.3rem", color: "var(--ink)", letterSpacing: "-0.3px" }}>EduERP</span>
+            </a>
+            {/* Desktop */}
+            <div className="nav-links" style={{ display: "flex", gap: "2.25rem", alignItems: "center" }}>
+              {[["#login", "Portals"], ["#features", "Features"], ["#why", "Why Us"], ["#faq", "FAQ"]].map(([h, l]) => (
+                <a key={h} href={h} className="nav-link">{l}</a>
+              ))}
             </div>
-        </>
-    );
-};
+            <button className="nav-cta btn-primary" onClick={() => navigate("/login/adminlogin")}>Get started</button>
+            {/* Mobile hamburger */}
+            <button className={`hamburger ${mobileOpen ? "open" : ""}`} onClick={() => setMobileOpen(o => !o)}>
+              <span /><span /><span />
+            </button>
+          </div>
+          {/* Mobile menu */}
+          <div className="mobile-menu" style={{
+            display: "none", flexDirection: "column",
+            background: "rgba(250,248,244,0.98)", backdropFilter: "blur(16px)",
+            borderTop: "1px solid var(--border)",
+            maxHeight: mobileOpen ? 280 : 0, overflow: "hidden",
+            transition: "max-height 0.35s ease",
+          }}>
+            {[["#login", "Portals"], ["#features", "Features"], ["#why", "Why Us"], ["#faq", "FAQ"]].map(([h, l]) => (
+              <a key={h} href={h} onClick={() => setMobileOpen(false)}
+                style={{ padding: "0.9rem 2rem", color: "var(--ink2)", fontWeight: 500, textDecoration: "none", borderBottom: "1px solid var(--border)", fontSize: "0.95rem" }}>
+                {l}
+              </a>
+            ))}
+            <div style={{ padding: "1rem 2rem 1.5rem" }}>
+              <button className="btn-primary" style={{ width: "100%" }} onClick={() => { navigate("/login/adminlogin"); setMobileOpen(false); }}>Get started</button>
+            </div>
+          </div>
+        </nav>
 
-export default LandingPage;
+        {/* ══ HERO ══ */}
+        <section style={{ paddingTop: "9rem", paddingBottom: "6rem", paddingLeft: "2rem", paddingRight: "2rem", maxWidth: 1160, margin: "0 auto", position: "relative" }}>
+
+          {/* Decorative blob */}
+          <div style={{ position: "absolute", top: "6rem", right: "-4rem", width: 480, height: 480, borderRadius: "50%", background: "radial-gradient(circle, rgba(43,79,255,0.07) 0%, transparent 65%)", pointerEvents: "none", zIndex: 0 }} />
+
+          <div style={{ position: "relative", zIndex: 1 }}>
+            {/* Eyebrow */}
+            <div style={{ animation: "fadeUp 0.6s ease both", display: "inline-flex", alignItems: "center", gap: "0.5rem", background: "var(--cream2)", border: "1px solid var(--border)", borderRadius: 50, padding: "0.3rem 1rem 0.3rem 0.5rem", marginBottom: "2.5rem" }}>
+              <span style={{ background: "var(--ink)", color: "#fff", borderRadius: 50, padding: "0.2rem 0.75rem", fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>New</span>
+              <span style={{ fontSize: "0.82rem", color: "var(--ink2)", fontWeight: 500 }}>Next-gen college ERP — built for real institutions</span>
+            </div>
+
+            <div className="hero-grid" style={{ display: "grid", gridTemplateColumns: "1fr 420px", gap: "4rem", alignItems: "center" }}>
+              <div>
+                <h1 className="hero-title" style={{ fontFamily: "var(--serif)", fontSize: "clamp(3rem, 5vw, 4.5rem)", lineHeight: 1.07, letterSpacing: "-1.5px", color: "var(--ink)", animation: "fadeUp 0.7s ease 0.1s both" }}>
+                  Campus management,
+                  <br />
+                  <em style={{ fontStyle: "italic", color: "var(--accent)" }}>finally unified.</em>
+                </h1>
+                <p style={{ fontSize: "1.05rem", color: "var(--muted)", lineHeight: 1.75, marginTop: "1.5rem", maxWidth: 480, animation: "fadeUp 0.7s ease 0.2s both", fontWeight: 300 }}>
+                  One platform connecting admins, faculty, and students. Attendance, results, notices, and full academic management — without the chaos.
+                </p>
+                <div style={{ display: "flex", gap: "0.85rem", marginTop: "2.25rem", flexWrap: "wrap", animation: "fadeUp 0.7s ease 0.3s both" }}>
+                  <button className="btn-primary" onClick={() => navigate("/login/studentlogin")} style={{ padding: "0.8rem 1.8rem" }}>Student portal →</button>
+                  <button className="btn-ghost" onClick={() => navigate("/login/facultylogin")}>Faculty login</button>
+                </div>
+
+                {/* Trust bar */}
+                <div style={{ display: "flex", alignItems: "center", gap: "1.25rem", marginTop: "2.5rem", flexWrap: "wrap", animation: "fadeUp 0.7s ease 0.4s both" }}>
+                  {["500+ students", "50+ faculty", "99.9% uptime"].map((t, i) => (
+                    <span key={i} style={{ display: "flex", alignItems: "center", gap: "0.4rem", fontSize: "0.82rem", color: "var(--muted)", fontWeight: 500 }}>
+                      <span style={{ width: 5, height: 5, borderRadius: "50%", background: "var(--accent)", display: "inline-block" }} />
+                      {t}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Hero visual card */}
+              <div style={{ animation: "fadeUp 0.8s ease 0.3s both" }}>
+                <div style={{ background: "#fff", border: "1px solid var(--border)", borderRadius: 20, padding: "1.5rem", boxShadow: "0 20px 60px rgba(26,23,20,0.08)" }}>
+                  <div style={{ background: "var(--cream)", borderRadius: 12, padding: "1rem", marginBottom: "1rem" }}>
+                    <div style={{ fontSize: "0.7rem", color: "var(--muted)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "0.5rem" }}>Attendance Overview</div>
+                    <div style={{ display: "flex", gap: "0.5rem", alignItems: "flex-end", height: 60 }}>
+                      {[70, 85, 60, 92, 78, 88, 95].map((h, i) => (
+                        <div key={i} style={{ flex: 1, background: i === 6 ? "var(--accent)" : "var(--border2)", borderRadius: 4, height: `${h}%`, transition: "height 0.3s" }} />
+                      ))}
+                    </div>
+                    <div style={{ display: "flex", justifyContent: "space-between", marginTop: "0.35rem" }}>
+                      {["M", "T", "W", "T", "F", "S", "S"].map((d, i) => (
+                        <span key={i} style={{ flex: 1, textAlign: "center", fontSize: "0.65rem", color: "var(--muted)" }}>{d}</span>
+                      ))}
+                    </div>
+                  </div>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem", marginBottom: "1rem" }}>
+                    {[["Mathematics", "94%", "#e8f0ff"], ["Physics", "88%", "#fff7e6"], ["Chemistry", "76%", "#e8fff2"], ["English", "91%", "#fff0f0"]].map(([sub, pct, bg]) => (
+                      <div key={sub} style={{ background: bg, borderRadius: 10, padding: "0.75rem" }}>
+                        <div style={{ fontSize: "0.72rem", color: "var(--muted)", fontWeight: 500 }}>{sub}</div>
+                        <div style={{ fontFamily: "var(--serif)", fontSize: "1.4rem", color: "var(--ink)", marginTop: "0.15rem" }}>{pct}</div>
+                      </div>
+                    ))}
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", padding: "0.75rem", background: "#f0f4ff", borderRadius: 10 }}>
+                    <span style={{ fontSize: "1.2rem" }}>📢</span>
+                    <div>
+                      <div style={{ fontSize: "0.75rem", fontWeight: 600, color: "var(--ink)" }}>Mid-term exams: Nov 18–22</div>
+                      <div style={{ fontSize: "0.68rem", color: "var(--muted)" }}>Posted by Admin · 2h ago</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ══ MARQUEE STRIP ══ */}
+        <div style={{ background: "var(--ink)", overflow: "hidden", padding: "0.9rem 0", borderTop: "none" }}>
+          <div className="marquee-track">
+            {[...Array(2)].map((_, rep) => (
+              ["Attendance Tracking", "Results Management", "Notice Board", "Student Portal", "Faculty Tools", "Admin Dashboard", "Role-Based Access", "Multi-Department Support", "Real-Time Sync", "Secure JWT Auth"].map((item, i) => (
+                <span key={`${rep}-${i}`} style={{ color: "rgba(255,255,255,0.6)", fontWeight: 500, fontSize: "0.82rem", letterSpacing: "0.12em", textTransform: "uppercase", padding: "0 2.5rem", whiteSpace: "nowrap" }}>
+                  {item}
+                  <span style={{ color: "rgba(255,255,255,0.2)", marginLeft: "2.5rem" }}>·</span>
+                </span>
+              ))
+            ))}
+          </div>
+        </div>
+
+        {/* ══ STATS ══ */}
+        <section style={{ background: "var(--cream2)", borderTop: "1px solid var(--border)", borderBottom: "1px solid var(--border)", padding: "4rem 2rem" }}>
+          <div className="stats-row" style={{ maxWidth: 900, margin: "0 auto", display: "flex", justifyContent: "space-around", flexWrap: "wrap", gap: "2rem" }}>
+            {[["500+", "Students enrolled"], ["50+", "Faculty members"], ["20+", "Departments"], ["99.9%", "Platform uptime"]].map(([val, label], i) => (
+              <Reveal key={i} delay={i * 100}>
+                <div className="stat-box">
+                  <div className="stat-num">{val}</div>
+                  <div className="stat-label">{label}</div>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+        </section>
+
+        {/* ══ PORTALS ══ */}
+        <section id="login" className="section-pad" style={{ padding: "6rem 2rem", maxWidth: 1160, margin: "0 auto" }}>
+          <Reveal>
+            <div style={{ marginBottom: "3.5rem", display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: "1rem" }}>
+              <div>
+                <div style={{ fontSize: "0.72rem", fontWeight: 700, color: "var(--accent)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "0.6rem" }}>Access Portals</div>
+                <h2 style={{ fontFamily: "var(--serif)", fontSize: "clamp(2rem, 4vw, 2.8rem)", letterSpacing: "-0.5px", lineHeight: 1.1 }}>Choose your portal</h2>
+              </div>
+              <p style={{ color: "var(--muted)", fontSize: "0.95rem", maxWidth: 320, lineHeight: 1.65, fontWeight: 300 }}>
+                Dedicated dashboards crafted for every role in your institution.
+              </p>
+            </div>
+          </Reveal>
+
+          <div className="portal-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1.25rem" }}>
+            {portals.map((p, i) => (
+              <Reveal key={i} delay={i * 100}>
+                <div className="portal-card" style={{ position: "relative" }}>
+                  {p.tag && (
+                    <span style={{ position: "absolute", top: "1.5rem", right: "1.5rem", background: "var(--ink)", color: "#fff", fontSize: "0.68rem", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", padding: "0.25rem 0.7rem", borderRadius: 50 }}>{p.tag}</span>
+                  )}
+                  <div style={{ fontSize: "1.8rem", marginBottom: "1.25rem", width: 52, height: 52, background: "var(--cream)", border: "1px solid var(--border)", borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    {p.icon}
+                  </div>
+                  <div style={{ fontSize: "0.7rem", fontWeight: 700, color: "var(--muted)", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: "0.35rem" }}>{p.label}</div>
+                  <h3 style={{ fontFamily: "var(--serif)", fontSize: "1.5rem", letterSpacing: "-0.3px", marginBottom: "0.75rem" }}>{p.title}</h3>
+                  <p style={{ color: "var(--muted)", fontSize: "0.875rem", lineHeight: 1.7, marginBottom: "1.5rem", fontWeight: 300 }}>{p.desc}</p>
+
+                  <ul style={{ listStyle: "none", marginBottom: "2rem", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                    {p.perks.map((perk, j) => (
+                      <li key={j} style={{ display: "flex", alignItems: "center", gap: "0.6rem", fontSize: "0.85rem", color: "var(--ink2)" }}>
+                        <span style={{ width: 16, height: 16, borderRadius: "50%", background: "var(--cream2)", border: "1px solid var(--border2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.6rem", flexShrink: 0, color: "var(--accent)" }}>✓</span>
+                        {perk}
+                      </li>
+                    ))}
+                  </ul>
+
+                  <button
+                    onClick={() => navigate(p.route)}
+                    style={{
+                      width: "100%", padding: "0.75rem", borderRadius: 10, border: "1.5px solid var(--ink)",
+                      background: "transparent", color: "var(--ink)", fontFamily: "var(--sans)",
+                      fontWeight: 600, fontSize: "0.875rem", cursor: "pointer",
+                      transition: "all 0.2s",
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.background = "var(--ink)"; e.currentTarget.style.color = "#fff"; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "var(--ink)"; }}
+                  >
+                    Login to {p.label} Portal →
+                  </button>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+        </section>
+
+        {/* ══ FEATURES ══ */}
+        <section id="features" style={{ background: "var(--cream2)", borderTop: "1px solid var(--border)", borderBottom: "1px solid var(--border)", padding: "6rem 2rem" }}>
+          <div style={{ maxWidth: 1160, margin: "0 auto" }}>
+            <Reveal>
+              <div style={{ textAlign: "center", marginBottom: "3.5rem" }}>
+                <div style={{ fontSize: "0.72rem", fontWeight: 700, color: "var(--accent)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "0.6rem" }}>Platform Features</div>
+                <h2 style={{ fontFamily: "var(--serif)", fontSize: "clamp(2rem, 4vw, 2.8rem)", letterSpacing: "-0.5px" }}>Built for every workflow</h2>
+                <p style={{ color: "var(--muted)", marginTop: "0.75rem", fontSize: "0.95rem", fontWeight: 300 }}>Everything you need to run your institution, without compromise.</p>
+              </div>
+            </Reveal>
+
+            <div className="features-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "1rem" }}>
+              {features.map((f, i) => (
+                <Reveal key={i} delay={i * 60}>
+                  <div className="feature-card">
+                    <div style={{ fontSize: "1.6rem", marginBottom: "1rem" }}>{f.icon}</div>
+                    <h3 style={{ fontWeight: 600, fontSize: "1rem", marginBottom: "0.45rem", color: "var(--ink)" }}>{f.title}</h3>
+                    <p style={{ color: "var(--muted)", fontSize: "0.875rem", lineHeight: 1.65, fontWeight: 300 }}>{f.desc}</p>
+                  </div>
+                </Reveal>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ══ WHY US ══ */}
+        <section id="why" style={{ padding: "6rem 2rem", maxWidth: 1160, margin: "0 auto" }}>
+          <Reveal>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "5rem", alignItems: "center", flexWrap: "wrap" }}>
+              <div>
+                <div style={{ fontSize: "0.72rem", fontWeight: 700, color: "var(--accent)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "0.6rem" }}>Why EduERP</div>
+                <h2 style={{ fontFamily: "var(--serif)", fontSize: "clamp(2rem, 4vw, 2.8rem)", letterSpacing: "-0.5px", lineHeight: 1.1, marginBottom: "1.5rem" }}>
+                  Designed for institutions that move fast
+                </h2>
+                <p style={{ color: "var(--muted)", lineHeight: 1.75, fontWeight: 300, fontSize: "0.975rem", marginBottom: "2rem" }}>
+                  Built on React, Node.js, and MongoDB — EduERP delivers real-time sync across every portal, enterprise-grade security, and zero software to install. Works on any device, from any browser.
+                </p>
+                <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                  {[
+                    ["⚡", "Real-time sync across all portals — no page refresh needed"],
+                    ["🛡️", "JWT auth + bcrypt hashing on every credential"],
+                    ["📱", "Pixel-perfect on desktop, tablet, and mobile"],
+                    ["🚀", "Sub-second load times on React + Node.js + MongoDB"],
+                  ].map(([icon, text], i) => (
+                    <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: "0.85rem" }}>
+                      <span style={{ fontSize: "1.1rem", marginTop: "0.1rem" }}>{icon}</span>
+                      <span style={{ fontSize: "0.9rem", color: "var(--ink2)", lineHeight: 1.6 }}>{text}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                {[
+                  { v: "24/7", l: "Always online", bg: "#f0f4ff" },
+                  { v: "3", l: "User roles", bg: "#fff7e6" },
+                  { v: "∞", l: "Departments", bg: "#e8fff2" },
+                  { v: "0", l: "Setup required", bg: "#fff0f0" },
+                ].map(({ v, l, bg }, i) => (
+                  <div key={i} style={{ background: bg, border: "1px solid var(--border)", borderRadius: 16, padding: "1.75rem 1.5rem", textAlign: "center" }}>
+                    <div style={{ fontFamily: "var(--serif)", fontSize: "2.8rem", color: "var(--ink)", marginBottom: "0.3rem" }}>{v}</div>
+                    <div style={{ fontSize: "0.78rem", color: "var(--muted)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em" }}>{l}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </Reveal>
+        </section>
+
+        {/* ══ FAQ ══ */}
+        <section id="faq" style={{ background: "var(--cream2)", borderTop: "1px solid var(--border)", padding: "6rem 2rem" }}>
+          <div style={{ maxWidth: 720, margin: "0 auto" }}>
+            <Reveal>
+              <div style={{ marginBottom: "3rem", textAlign: "center" }}>
+                <div style={{ fontSize: "0.72rem", fontWeight: 700, color: "var(--accent)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "0.6rem" }}>FAQ</div>
+                <h2 style={{ fontFamily: "var(--serif)", fontSize: "clamp(2rem, 4vw, 2.6rem)", letterSpacing: "-0.5px" }}>Common questions</h2>
+              </div>
+            </Reveal>
+
+            <div>
+              {faqs.map((faq, i) => (
+                <Reveal key={i} delay={i * 50}>
+                  <div className="faq-item">
+                    <button className="faq-btn" onClick={() => setOpenFaq(openFaq === i ? null : i)}>
+                      <span>{faq.q}</span>
+                      <span className="faq-chevron" style={{
+                        transform: openFaq === i ? "rotate(45deg)" : "rotate(0deg)",
+                        borderColor: openFaq === i ? "var(--ink)" : "var(--border2)",
+                        background: openFaq === i ? "var(--ink)" : "transparent",
+                        color: openFaq === i ? "#fff" : "var(--muted)",
+                      }}>+</span>
+                    </button>
+                    <div style={{
+                      maxHeight: openFaq === i ? 200 : 0, overflow: "hidden",
+                      transition: "max-height 0.4s cubic-bezier(0.4,0,0.2,1)",
+                    }}>
+                      <p style={{ paddingBottom: "1.25rem", color: "var(--muted)", fontSize: "0.9rem", lineHeight: 1.75, fontWeight: 300 }}>{faq.a}</p>
+                    </div>
+                  </div>
+                </Reveal>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ══ CTA BANNER ══ */}
+        <section style={{ padding: "5rem 2rem 7rem" }}>
+          <Reveal>
+            <div style={{ maxWidth: 1000, margin: "0 auto", background: "var(--ink)", borderRadius: 28, padding: "4rem 3.5rem", position: "relative", overflow: "hidden" }}>
+              {/* Decorative circle */}
+              <div style={{ position: "absolute", top: "-60px", right: "-60px", width: 280, height: 280, borderRadius: "50%", border: "1px solid rgba(255,255,255,0.06)", pointerEvents: "none" }} />
+              <div style={{ position: "absolute", top: "-20px", right: "-20px", width: 160, height: 160, borderRadius: "50%", border: "1px solid rgba(255,255,255,0.1)", pointerEvents: "none" }} />
+
+              <div className="cta-inner" style={{ position: "relative", zIndex: 1, display: "flex", justifyContent: "space-between", alignItems: "center", gap: "2rem" }}>
+                <div>
+                  <div style={{ fontSize: "0.72rem", fontWeight: 700, color: "rgba(255,255,255,0.4)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "0.75rem" }}>Get started today</div>
+                  <h2 style={{ fontFamily: "var(--serif)", fontSize: "clamp(1.8rem, 3.5vw, 2.6rem)", color: "#fff", letterSpacing: "-0.5px", lineHeight: 1.1, marginBottom: "0.75rem" }}>
+                    Ready to transform your institution?
+                  </h2>
+                  <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "0.95rem", fontWeight: 300 }}>
+                    Join institutions already using EduERP to simplify campus management.
+                  </p>
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", flexShrink: 0 }}>
+                  <button
+                    onClick={() => navigate("/login/studentlogin")}
+                    style={{ padding: "0.8rem 1.8rem", borderRadius: 50, border: "none", background: "#fff", color: "var(--ink)", fontWeight: 700, fontSize: "0.875rem", cursor: "pointer", whiteSpace: "nowrap", transition: "all 0.2s" }}
+                    onMouseEnter={e => { e.currentTarget.style.background = "#e8f0ff"; e.currentTarget.style.color = "var(--accent)"; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = "#fff"; e.currentTarget.style.color = "var(--ink)"; }}
+                  >Student Login →</button>
+                  <button
+                    onClick={() => navigate("/login/facultylogin")}
+                    style={{ padding: "0.8rem 1.8rem", borderRadius: 50, border: "1.5px solid rgba(255,255,255,0.2)", background: "transparent", color: "#fff", fontWeight: 500, fontSize: "0.875rem", cursor: "pointer", whiteSpace: "nowrap", transition: "all 0.2s" }}
+                    onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.5)"; e.currentTarget.style.background = "rgba(255,255,255,0.08)"; }}
+                    onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.2)"; e.currentTarget.style.background = "transparent"; }}
+                  >Faculty Login</button>
+                </div>
+              </div>
+            </div>
+          </Reveal>
+        </section>
+
+        {/* ══ FOOTER ══ */}
+        <footer style={{ borderTop: "1px solid var(--border)", background: "var(--cream2)", padding: "3rem 2rem 2rem" }}>
+          <div className="footer-row" style={{ maxWidth: 1160, margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "2rem", flexWrap: "wrap" }}>
+            <div style={{ maxWidth: 260 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.85rem" }}>
+                <div style={{ width: 30, height: 30, borderRadius: 8, background: "var(--ink)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.85rem" }}>🎓</div>
+                <span style={{ fontFamily: "var(--serif)", fontSize: "1.15rem", color: "var(--ink)" }}>EduERP</span>
+              </div>
+              <p style={{ color: "var(--muted)", fontSize: "0.82rem", lineHeight: 1.7, fontWeight: 300 }}>Empowering educational institutions with modern, intelligent ERP solutions.</p>
+            </div>
+
+            <div style={{ display: "flex", gap: "3.5rem", flexWrap: "wrap" }}>
+              {[
+                { heading: "Portals", links: [["Student Login", "/login/studentlogin"], ["Faculty Login", "/login/facultylogin"], ["Admin Login", "/login/adminlogin"]] },
+                { heading: "Features", links: [["Attendance", "#features"], ["Results", "#features"], ["Notices", "#features"]] },
+                { heading: "Company", links: [["Why Us", "#why"], ["FAQ", "#faq"], ["Get Started", "/login/adminlogin"]] },
+              ].map(({ heading, links }) => (
+                <div key={heading}>
+                  <div style={{ fontSize: "0.7rem", fontWeight: 700, color: "var(--ink)", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: "0.9rem" }}>{heading}</div>
+                  {links.map(([label, href]) => (
+                    <div key={label} style={{ marginBottom: "0.55rem" }}>
+                      <a href={href} style={{ color: "var(--muted)", textDecoration: "none", fontSize: "0.85rem", fontWeight: 300, transition: "color 0.2s" }}
+                        onMouseEnter={e => e.currentTarget.style.color = "var(--ink)"}
+                        onMouseLeave={e => e.currentTarget.style.color = "var(--muted)"}
+                      >{label}</a>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div style={{ maxWidth: 1160, margin: "2rem auto 0", paddingTop: "1.25rem", borderTop: "1px solid var(--border)", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "0.5rem" }}>
+            <p style={{ color: "var(--muted)", fontSize: "0.78rem", fontWeight: 300 }}>© 2026 EduERP · All rights reserved</p>
+            <p style={{ color: "var(--muted)", fontSize: "0.78rem", fontWeight: 300 }}>Built with ❤️ for education</p>
+          </div>
+        </footer>
+
+      </div>
+    </>
+  );
+}

@@ -9,11 +9,9 @@ import { MenuItem, Select } from "@mui/material";
 import Spinner from "../../../utils/Spinner";
 import * as classes from "../../../utils/styles";
 import { ATTENDANCE_MARKED, SET_ERRORS } from "../../../redux/actionTypes";
-import { getTest } from "../../../redux/actions/facultyActions";
 import { getSubject } from "../../../redux/actions/adminActions";
 const Body = () => {
   const dispatch = useDispatch();
-  const user = JSON.parse(localStorage.getItem("user"));
   const departments = useSelector((state) => state.admin.allDepartment);
   const subjects = useSelector((state) => state.admin.subjects.result);
 
@@ -86,7 +84,7 @@ const Body = () => {
     } else {
       setLoading(true);
     }
-  }, [store.errors, store.faculty.attendanceUploaded]);
+  }, [dispatch, store.errors, store.faculty.attendanceUploaded]);
 
   useEffect(() => {
     if (store.faculty.attendanceUploaded) {
@@ -100,24 +98,24 @@ const Body = () => {
 
   useEffect(() => {
     dispatch({ type: SET_ERRORS, payload: {} });
-  }, []);
+  }, [dispatch]);
 
   return (
-    <div className="flex-[0.8] mt-3">
+    <div className="flex-1 min-w-0 mt-3">
       <div className="space-y-5">
         <div className="flex text-muted items-center space-x-2">
           <BoyIcon />
           <h1>All Students</h1>
         </div>
-        <div className=" mr-10 surface-card grid grid-cols-4 rounded-xl pt-6 pl-6 h-[29.5rem]">
+        <div className="mr-0 md:mr-10 surface-card grid grid-cols-1 lg:grid-cols-4 gap-6 rounded-xl p-4 sm:p-6 h-auto md:h-[29.5rem]">
           <form
-            className="flex flex-col space-y-2 col-span-1"
+            className="flex flex-col space-y-2 lg:col-span-1 w-full max-w-sm"
             onSubmit={handleSubmit}>
             <label htmlFor="department">Department</label>
             <Select
               required
               displayEmpty
-              sx={{ height: 36, width: 224 }}
+              sx={{ height: 36, width: "100%" }}
               inputProps={{ "aria-label": "Without label" }}
               value={value.department}
               onChange={(e) =>
@@ -134,7 +132,7 @@ const Body = () => {
             <Select
               required
               displayEmpty
-              sx={{ height: 36, width: 224 }}
+              sx={{ height: 36, width: "100%" }}
               inputProps={{ "aria-label": "Without label" }}
               value={value.year}
               onChange={(e) => setValue({ ...value, year: e.target.value })}>
@@ -148,7 +146,7 @@ const Body = () => {
             <Select
               required
               displayEmpty
-              sx={{ height: 36, width: 224 }}
+              sx={{ height: 36, width: "100%" }}
               inputProps={{ "aria-label": "Without label" }}
               value={value.section}
               onChange={(e) => setValue({ ...value, section: e.target.value })}>
@@ -159,12 +157,12 @@ const Body = () => {
             </Select>
 
             <button
-              className={`${classes.adminFormSubmitButton} w-56`}
+              className={`${classes.adminFormSubmitButton} w-full`}
               type="submit">
               Search
             </button>
           </form>
-          <div className="col-span-3 mr-6">
+          <div className="lg:col-span-3 min-w-0">
             <div className={classes.loadingAndError}>
               {loading && (
                 <Spinner
@@ -185,7 +183,7 @@ const Body = () => {
               !loading &&
               Object.keys(error).length === 0 &&
               students?.length !== 0 && (
-                <div className={`${classes.adminData} h-[20rem]`}>
+                <div className={`${classes.adminData} max-h-[55vh] md:h-[20rem]`}>
                   <div className="grid grid-cols-7">
                     <h1 className={`col-span-1 ${classes.adminDataHeading}`}>
                       Select

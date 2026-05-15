@@ -11,7 +11,6 @@ import { CREATE_NOTICE, SET_ERRORS } from "../../../redux/actionTypes";
 const Body = () => {
   const dispatch = useDispatch();
   const store = useSelector((state) => state);
-  const departments = useSelector((state) => state.admin.allDepartment);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState({});
   const [value, setValue] = useState({
@@ -52,14 +51,14 @@ const Body = () => {
     } else {
       setLoading(true);
     }
-  }, [store.errors, store.admin.noticeCreated]);
+  }, [dispatch, store.errors, store.admin.noticeCreated]);
 
   useEffect(() => {
     dispatch({ type: SET_ERRORS, payload: {} });
-  }, []);
+  }, [dispatch]);
 
   return (
-    <div className="flex-[0.8] mt-3">
+    <div className="flex-1 min-w-0 mt-3">
       <div className="space-y-5">
         <div className="flex text-muted items-center space-x-2">
           <EngineeringIcon />

@@ -23,7 +23,7 @@ export const studentSignIn = (formData, navigate) => async (dispatch) => {
 export const studentUpdatePassword =
   (formData, navigate) => async (dispatch) => {
     try {
-      const { data } = await api.studentUpdatePassword(formData);
+      await api.studentUpdatePassword(formData);
       dispatch({ type: UPDATE_PASSWORD, payload: true });
       alert("Password Updated");
       navigate("/student/home");
@@ -34,7 +34,7 @@ export const studentUpdatePassword =
 
 export const updateStudent = (formData) => async (dispatch) => {
   try {
-    const { data } = await api.updateStudent(formData);
+    await api.updateStudent(formData);
     dispatch({ type: UPDATE_STUDENT, payload: true });
   } catch (error) {
     dispatch({ type: SET_ERRORS, payload: error.response.data });

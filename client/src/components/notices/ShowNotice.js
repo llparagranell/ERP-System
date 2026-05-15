@@ -11,7 +11,7 @@ const ShowNotice = ({ notice }) => {
         <h1 className="text-subtle">{notice.date}</h1>
       </div>
       <h1 className="self-center font-semibold text-lg">{notice.topic}</h1>
-      <p className="text-muted max-w-[50rem] overflow-x-hidden overflow-y-auto h-[7rem]">
+      <p className="text-muted max-w-[50rem] overflow-x-hidden overflow-y-auto max-h-40 md:h-[7rem] pr-1">
         {notice.content}
       </p>
     </div>

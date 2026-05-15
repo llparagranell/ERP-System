@@ -17,7 +17,6 @@ const Body = () => {
   const store = useSelector((state) => state);
   const departments = useSelector((state) => state.admin.allDepartment);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState({});
   const [value, setValue] = useState({
     name: "",
     dob: "",
@@ -33,15 +32,8 @@ const Body = () => {
     section: "",
   });
 
-  useEffect(() => {
-    if (Object.keys(store.errors).length !== 0) {
-      setError(store.errors);
-    }
-  }, [store.errors]);
-
   const handleSubmit = (e) => {
     e.preventDefault();
-    setError({});
     setLoading(true);
     if (
       value.name === "" &&
@@ -74,10 +66,10 @@ const Body = () => {
 
   useEffect(() => {
     dispatch({ type: SET_ERRORS, payload: {} });
-  }, []);
+  }, [dispatch]);
 
   return (
-    <div className="flex-[0.8] mt-3">
+    <div className="flex-1 min-w-0 mt-3">
       <div className="space-y-5">
         <div className="flex  items-center justify-between mr-8">
           <div className="flex space-x-2 text-muted">
@@ -279,6 +271,15 @@ const Body = () => {
                   messageColor="blue"
                 />
               )}
+              {!loading &&
+                store?.errors &&
+                Object.keys(store.errors).length !== 0 && (
+                  <p className="text-red-500 text-sm">
+                    {store.errors.backendError ||
+                      store.errors.updateError ||
+                      Object.values(store.errors)[0]}
+                  </p>
+                )}
             </div>
           </form>
         </div>

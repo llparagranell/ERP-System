@@ -11,6 +11,7 @@ const Body = () => {
   const dispatch = useDispatch();
   const store = useSelector((state) => state);
   const user = JSON.parse(localStorage.getItem("user"));
+  const department = user?.result?.department;
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState({});
   const [value, setValue] = useState({
@@ -20,7 +21,7 @@ const Body = () => {
     test: "",
     totalMarks: "",
     date: "",
-    department: user.result.department,
+    department: department || "",
   });
 
   useEffect(() => {
@@ -33,10 +34,10 @@ const Body = () => {
         test: "",
         totalMarks: "",
         date: "",
-        department: user.result.department,
+        department: department || "",
       });
     }
-  }, [store.errors]);
+  }, [department, store.errors]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -56,7 +57,7 @@ const Body = () => {
           test: "",
           totalMarks: "",
           date: "",
-          department: user.result.department,
+          department: department || "",
         });
 
         dispatch({ type: SET_ERRORS, payload: {} });
@@ -65,14 +66,14 @@ const Body = () => {
     } else {
       setLoading(true);
     }
-  }, [store.errors, store.faculty.testAdded]);
+  }, [department, dispatch, store.errors, store.faculty.testAdded]);
 
   useEffect(() => {
     dispatch({ type: SET_ERRORS, payload: {} });
-  }, []);
+  }, [dispatch]);
 
   return (
-    <div className="flex-[0.8] mt-3">
+    <div className="flex-1 min-w-0 mt-3">
       <div className="space-y-5">
         <div className="flex text-muted items-center space-x-2">
           <AddIcon />
