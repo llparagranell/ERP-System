@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { facultySignIn } from "../../../redux/actions/facultyActions";
 import VisibilityIcon from "@mui/icons-material/Visibility";

@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 /* ── Scroll-reveal hook ── */
 function useReveal(threshold = 0.12) {
@@ -48,6 +48,14 @@ export default function LandingPage() {
     window.addEventListener("scroll", fn);
     return () => window.removeEventListener("scroll", fn);
   }, []);
+
+  const scrollToSection = (hash) => {
+    const id = hash.startsWith("#") ? hash.slice(1) : hash;
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+  };
 
   const portals = [
     {
@@ -265,14 +273,24 @@ export default function LandingPage() {
         }}>
           <div style={{ maxWidth: 1160, margin: "0 auto", padding: "0 2rem", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             {/* Logo */}
-            <a href="/" style={{ display: "flex", alignItems: "center", gap: "0.5rem", textDecoration: "none" }}>
+            <Link to="/" style={{ display: "flex", alignItems: "center", gap: "0.5rem", textDecoration: "none" }}>
               <div style={{ width: 34, height: 34, borderRadius: 9, background: "var(--ink)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1rem" }}>🎓</div>
               <span style={{ fontFamily: "var(--serif)", fontSize: "1.3rem", color: "var(--ink)", letterSpacing: "-0.3px" }}>EduERP</span>
-            </a>
+            </Link>
             {/* Desktop */}
             <div className="nav-links" style={{ display: "flex", gap: "2.25rem", alignItems: "center" }}>
               {[["#login", "Portals"], ["#features", "Features"], ["#why", "Why Us"], ["#faq", "FAQ"]].map(([h, l]) => (
-                <a key={h} href={h} className="nav-link">{l}</a>
+                <a
+                  key={h}
+                  href={h}
+                  className="nav-link"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    scrollToSection(h);
+                  }}
+                >
+                  {l}
+                </a>
               ))}
             </div>
             <button className="nav-cta btn-primary" onClick={() => navigate("/login/adminlogin")}>Get started</button>
@@ -290,7 +308,14 @@ export default function LandingPage() {
             transition: "max-height 0.35s ease",
           }}>
             {[["#login", "Portals"], ["#features", "Features"], ["#why", "Why Us"], ["#faq", "FAQ"]].map(([h, l]) => (
-              <a key={h} href={h} onClick={() => setMobileOpen(false)}
+              <a
+                key={h}
+                href={h}
+                onClick={(e) => {
+                  e.preventDefault();
+                  scrollToSection(h);
+                  setMobileOpen(false);
+                }}
                 style={{ padding: "0.9rem 2rem", color: "var(--ink2)", fontWeight: 500, textDecoration: "none", borderBottom: "1px solid var(--border)", fontSize: "0.95rem" }}>
                 {l}
               </a>
@@ -624,10 +649,23 @@ export default function LandingPage() {
                   <div style={{ fontSize: "0.7rem", fontWeight: 700, color: "var(--ink)", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: "0.9rem" }}>{heading}</div>
                   {links.map(([label, href]) => (
                     <div key={label} style={{ marginBottom: "0.55rem" }}>
-                      <a href={href} style={{ color: "var(--muted)", textDecoration: "none", fontSize: "0.85rem", fontWeight: 300, transition: "color 0.2s" }}
-                        onMouseEnter={e => e.currentTarget.style.color = "var(--ink)"}
-                        onMouseLeave={e => e.currentTarget.style.color = "var(--muted)"}
-                      >{label}</a>
+                      {href.startsWith("#") ? (
+                        <a
+                          href={href}
+                          style={{ color: "var(--muted)", textDecoration: "none", fontSize: "0.85rem", fontWeight: 300, transition: "color 0.2s" }}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            scrollToSection(href);
+                          }}
+                          onMouseEnter={e => e.currentTarget.style.color = "var(--ink)"}
+                          onMouseLeave={e => e.currentTarget.style.color = "var(--muted)"}
+                        >{label}</a>
+                      ) : (
+                        <Link to={href} style={{ color: "var(--muted)", textDecoration: "none", fontSize: "0.85rem", fontWeight: 300, transition: "color 0.2s" }}
+                          onMouseEnter={e => e.currentTarget.style.color = "var(--ink)"}
+                          onMouseLeave={e => e.currentTarget.style.color = "var(--muted)"}
+                        >{label}</Link>
+                      )}
                     </div>
                   ))}
                 </div>
