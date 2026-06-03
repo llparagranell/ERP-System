@@ -234,23 +234,27 @@ export default function LandingPage() {
         .stat-label { font-size: 0.78rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 0.4rem; font-weight: 500; }
 
         /* Hamburger */
-        .hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 4px; }
+        .hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 4px; z-index: 10001; flex-shrink: 0; }
         .hamburger span { display: block; width: 22px; height: 1.5px; background: var(--ink2); border-radius: 2px; transition: all 0.3s; }
         .hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
         .hamburger.open span:nth-child(2) { opacity: 0; }
         .hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+        .nav-inner { width: 100%; box-sizing: border-box; }
 
         /* RESPONSIVE */
         @media (max-width: 768px) {
           .hamburger { display: flex !important; }
           .nav-links { display: none !important; }
           .nav-cta { display: none !important; }
+          .nav-inner { width: 100%; justify-content: space-between; padding: 0 1rem !important; min-width: 0; }
           .mobile-menu { display: flex !important; }
           .hero-title { font-size: clamp(2.4rem, 8vw, 3.2rem) !important; }
           .hero-grid { grid-template-columns: 1fr !important; }
           .portal-grid { grid-template-columns: 1fr !important; }
           .features-grid { grid-template-columns: 1fr 1fr !important; }
           .stats-row { grid-template-columns: 1fr 1fr !important; display: grid !important; gap: 2rem !important; }
+          .why-grid { grid-template-columns: 1fr !important; gap: 2.5rem !important; }
+          .why-stats-grid { grid-template-columns: 1fr !important; }
           .cta-inner { flex-direction: column !important; align-items: flex-start !important; }
           .footer-row { flex-direction: column !important; gap: 2.5rem !important; }
           .section-pad { padding: 4rem 1.5rem !important; }
@@ -271,7 +275,7 @@ export default function LandingPage() {
           borderBottom: scrolled ? "1px solid var(--border)" : "none",
           transition: "all 0.35s ease",
         }}>
-          <div style={{ maxWidth: 1160, margin: "0 auto", padding: "0 2rem", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <div className="nav-inner" style={{ width: "100%", maxWidth: 1160, margin: "0 auto", padding: "0 1rem", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem", flexWrap: "wrap" }}>
             {/* Logo */}
             <Link to="/" style={{ display: "flex", alignItems: "center", gap: "0.5rem", textDecoration: "none" }}>
               <div style={{ width: 34, height: 34, borderRadius: 9, background: "var(--ink)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1rem" }}>🎓</div>
@@ -301,11 +305,17 @@ export default function LandingPage() {
           </div>
           {/* Mobile menu */}
           <div className="mobile-menu" style={{
-            display: "none", flexDirection: "column",
+            flexDirection: "column",
+            position: "absolute",
+            top: "100%",
+            left: 0,
+            right: 0,
             background: "rgba(250,248,244,0.98)", backdropFilter: "blur(16px)",
             borderTop: "1px solid var(--border)",
             maxHeight: mobileOpen ? 280 : 0, overflow: "hidden",
-            transition: "max-height 0.35s ease",
+            transition: "max-height 0.35s ease, opacity 0.25s ease",
+            opacity: mobileOpen ? 1 : 0,
+            zIndex: 9998,
           }}>
             {[["#login", "Portals"], ["#features", "Features"], ["#why", "Why Us"], ["#faq", "FAQ"]].map(([h, l]) => (
               <a
@@ -512,9 +522,9 @@ export default function LandingPage() {
         </section>
 
         {/* ══ WHY US ══ */}
-        <section id="why" style={{ padding: "6rem 2rem", maxWidth: 1160, margin: "0 auto" }}>
+        <section id="why" className="why-section" style={{ padding: "6rem 2rem", maxWidth: 1160, margin: "0 auto" }}>
           <Reveal>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "5rem", alignItems: "center", flexWrap: "wrap" }}>
+            <div className="why-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "5rem", alignItems: "center", flexWrap: "wrap" }}>
               <div>
                 <div style={{ fontSize: "0.72rem", fontWeight: 700, color: "var(--accent)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "0.6rem" }}>Why EduERP</div>
                 <h2 style={{ fontFamily: "var(--serif)", fontSize: "clamp(2rem, 4vw, 2.8rem)", letterSpacing: "-0.5px", lineHeight: 1.1, marginBottom: "1.5rem" }}>
@@ -538,7 +548,7 @@ export default function LandingPage() {
                 </div>
               </div>
 
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+              <div className="why-stats-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                 {[
                   { v: "24/7", l: "Always online", bg: "#f0f4ff" },
                   { v: "3", l: "User roles", bg: "#fff7e6" },
